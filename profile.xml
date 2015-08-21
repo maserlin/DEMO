@@ -1,0 +1,55 @@
+<DemoGame>
+	<Reels value="2" >
+		<ReelLayout id="0" name="NormalReels" value="5" >
+			<Reel value="7,5,3,2,0,1,3,0,2,2,0,1,3,0,2,4,5,6,7,0,4,1,0,2,3,1,8,2,4,1,0,3,2,1,0,4,6,5,7,5,3,2,4,5,6,7,8,9,8,7,6,5,1" view="3" id="0" />
+			<Reel value="1,4,5,1,6,5,0,2,1,2,0,1,3,0,2,0,3,4,0,2,3,7,6,1,4,0,3,1,2,6,7,2,1,0,4,1,0,0,7,5,3,2,4,5,6,7,8,9,8,7,6,5,3" view="3" id="1" />
+			<Reel value="3,1,7,5,3,0,4,1,2,0,1,3,0,2,6,5,0,1,2,0,3,2,1,3,8,2,9,8,4,0,1,3,0,2,1,4,2,5,7,5,3,2,4,5,6,7,8,9,8,7,6,5,7" view="3" id="2" />
+			<Reel value="0,3,2,4,1,0,3,2,0,4,3,0,1,0,2,2,0,1,3,0,2,3,0,7,6,5,1,6,5,7,2,1,0,4,1,0,0,2,7,5,3,2,4,5,6,7,8,9,8,7,6,5,1" view="3" id="3" />
+			<Reel value="0,8,4,0,1,8,0,2,0,1,3,0,4,2,2,0,1,3,0,2,0,1,3,2,6,7,5,1,7,5,6,1,0,3,1,0,4,2,7,5,3,2,4,5,6,7,8,9,8,7,6,5,0" view="3" id="4" />
+		</ReelLayout>
+		<ReelLayout id="1" name="BonusReels" value="5" >
+			<Reel value="7,5,3,2,0,1,3,0,2,2,0,1,3,0,2,4,5,6,7,0,4,1,0,2,3,1,8,2,4,1,0,3,2,1,0,4,6,5,7,5,3,2,4,5,6,7,8,9,8,7,6,5,1" view="3" id="0" />
+			<Reel value="1,4,5,1,6,5,0,2,1,2,0,1,3,0,2,0,3,4,0,2,3,7,6,1,4,0,3,1,2,6,7,2,1,0,4,1,0,0,7,5,3,2,4,5,6,7,8,9,8,7,6,5,3" view="3" id="1" />
+			<Reel value="11,1,7,5,3,0,4,1,2,0,1,3,0,2,6,5,0,1,2,0,3,2,1,3,8,2,9,8,4,0,1,3,0,2,1,4,2,5,7,5,3,2,4,5,6,7,8,9,8,7,6,5,7" view="3" id="2" />
+			<Reel value="0,3,2,4,1,0,3,2,0,4,3,0,1,0,2,2,0,1,3,0,2,3,0,7,6,5,1,6,5,7,2,1,0,4,1,0,0,2,7,5,3,2,4,5,6,7,8,9,8,7,6,5,1" view="3" id="3" />
+			<Reel value="0,8,4,0,1,8,0,2,0,1,3,0,4,2,2,0,1,3,0,2,0,1,3,2,6,7,5,1,7,5,6,1,0,3,1,0,4,2,7,5,3,2,4,5,6,7,8,9,8,7,6,5,0" view="3" id="4" />
+		</ReelLayout>
+	</Reels>
+	<Symbols value="12" >
+		<Symbol name="Ten" paytable="0,0,4,10,25" id="0" consecutive="3" multiplier="1" type="Normal" />
+		<Symbol name="Jack" paytable="0,0,5,15,30" id="1" consecutive="3" multiplier="1" type="Normal" />
+		<Symbol name="Queen" paytable="0,0,6,20,50" id="2" consecutive="3" multiplier="1" type="Normal" />
+		<Symbol name="King" paytable="0,0,8,35,80" id="3" consecutive="3" multiplier="1" type="Normal" />
+		<Symbol name="Ace" paytable="0,0,10,50,100" id="4" consecutive="3" multiplier="1" type="Normal" />
+		<Symbol name="Paw" paytable="0,0,30,100,500" id="5" consecutive="3" multiplier="1" type="Normal" />
+		<Symbol name="Bullet" paytable="0,0,50,400,1000" id="6" consecutive="3" multiplier="1" type="Normal" />
+		<Symbol name="Doctor" paytable="0,0,70,600,1500" id="7" consecutive="3" multiplier="1" type="Normal" />
+		<Symbol name="Jewel" paytable="0,0,100,1000,2000" id="8" consecutive="3" multiplier="1" type="Normal" />
+		<Symbol name="Wild" paytable="0,0,0,0,0" id="9" consecutive="1" multiplier="1" type="Wild" />
+		<Symbol name="Bonus" paytable="0,0,0,0,0" id="11" consecutive="1" multiplier="1" type="Scatter" />
+	</Symbols>
+	<Winlines value="20" >
+		<Winline value="1,1,1,1,1" id="0" />
+		<Winline value="0,0,0,0,0" id="1" />
+		<Winline value="2,2,2,2,2" id="2" />
+		<Winline value="0,1,2,1,0" id="3" />
+		<Winline value="2,1,0,1,2" id="4" />
+		<Winline value="0,0,1,2,2" id="5" />
+		<Winline value="2,2,1,0,0" id="6" />
+		<Winline value="1,0,0,0,1" id="7" />
+		<Winline value="1,2,2,2,1" id="8" />
+		<Winline value="1,0,1,0,1" id="9" />
+		<Winline value="1,2,1,2,1" id="10" />
+		<Winline value="0,1,0,1,0" id="11" />
+		<Winline value="2,1,2,1,2" id="12" />
+		<Winline value="1,1,0,1,1" id="13" />
+		<Winline value="1,1,2,1,1" id="14" />
+		<Winline value="0,1,1,1,0" id="15" />
+		<Winline value="2,1,1,1,2" id="16" />
+		<Winline value="0,2,0,2,0" id="17" />
+		<Winline value="2,0,2,0,2" id="18" />
+		<Winline value="2,2,0,2,2" id="19" />
+	</Winlines>
+	<Stakes value="0.01,0.02,0.05,0.1,0.2,0.3,0.4,0.5,1,2,4,5,10" />
+	<Bonus value="15" />
+</DemoGame>
