@@ -68,7 +68,7 @@ Game.prototype.onAssetsLoaded = function(obj){
     stage.addChild(this.layers[Game.CONSOLE]);
 
     // Create a background manager with a couple of images to play with.
-    this.gameBackground = new GameBackground(["im/bg.jpg","im/bg2.jpg"]);
+    this.gameBackground = new GameBackground(["images/bg.jpg","images/bg2.jpg"]);
 
     // gameBackground should be able to do its own cross-fades etc because it *is*
     // a PIXI.Container: we can manage it as a single item. 
@@ -302,7 +302,7 @@ Game.prototype.onStopReelsOnError = function(){
     // Set random result
     else {
         // Decide on bonus 
-        if(Math.floor(Math.random() * 15) == 0){
+        if(Math.floor(Math.random() * GameConfig.getInstance().bonusChance) == 0){
             
             reelset = 1;
             
@@ -336,89 +336,5 @@ Game.prototype.onStopReelsOnError = function(){
     console.log("call stop pos " + stops);
 };
 
-
-
-
-/** *****************************************************************************************
- * Test method 
- */
-Game.prototype.createGameAssets = function(){
-    //this.createBunny();
-    
-    // create a background + quick and dirty resize
-    this.gameBackground = new PIXI.Sprite(PIXI.Texture.fromImage("im/bg.jpg"));
-    var that = this;
-    this.gameBackground.resize = function(xscale,yscale){
-        var size = getWindowBounds()
-        that.bg.position.x = size.x/2;
-        that.bg.position.y = size.y/2;
-    }
-    // center the sprites anchor point
-    this.gameBackground.anchor.x = 0.5;
-    this.gameBackground.anchor.y = 0.5;
-    // stage should be global?
-    stage.addChild(this.gameBackground);
-
-    // List assets and get them loaded
-    var assets = ["im/spinButton.json","im/explosion.json","im/BlursNStills.json"];
-    var loader = PIXI.loader;
-    loader.add(assets);
-    loader.once('complete',this.onAssetsLoaded);
-    loader.load();
-};
-
-
-/** ****************************************************************************************************
- * Test method 
- */
-Game.prototype.createBunny = function(){
-    // create a texture from an image path
-    //var texture = PIXI.Texture.fromImage("im/bunny.png");
-    
-    // create a new Sprite using the texture
-    this.bunny = new PIXI.Sprite(PIXI.Texture.fromImage("im/bunny.png"));
-    this.bunny.anchor.x = 0.5;
-    this.bunny.anchor.y = 0.5;
-    stage.addChild(this.bunny);
-};
-
-
-/** ****************************************************************************************************
- * Test method 
- */
-Game.prototype.addRectangle = function(x,y,w,h){
-    var gfx = new PIXI.Graphics();
-    
-    gfx.beginFill(0xFFFF00);
-    
-    // set the line style to have a width of 5 and set the color to red
-    gfx.lineStyle(5, 0xFF0000);
-    
-    // draw a rectangle
-    gfx.drawRect(x,y,w,h);
-    
-    stage.addChild(gfx);
-    
-    this.rect = gfx;
-};
-
-
-/** ****************************************************************************************************
- * Test method 
- */
-Game.prototype.addExplosion = function(){
-    var explosionTextures = [];    
-    for (var i=0; i < 26; i++) 
-    {
-        var texture = PIXI.Texture.fromFrame("Explosion_Sequence_A " + (i+1) + ".png");
-        explosionTextures.push(texture);
-    };
-    var explosion = new PIXI.extras.MovieClip(explosionTextures);
-    explosion.position.x = explosion.position.y = 100;
-    explosion.anchor.x = explosion.anchor.y = 0.5;
-//    explosion.rotation = Math.random() * Math.PI;
-    explosion.gotoAndPlay(0);
-    stage.addChild(explosion);
-};
 
 

@@ -9,7 +9,7 @@ function WinSplash(position)
     PIXI.Container.call(this);
     this.position = position; 
 
-    this.bg = new PIXI.Sprite(PIXI.Texture.fromImage("im/bonus_outro.png"));
+    this.bg = new PIXI.Sprite(PIXI.Texture.fromImage("images/bonus_outro.png"));
     this.bg.anchor.x = this.bg.anchor.y = 0.5;
     this.addChild(this.bg);
     

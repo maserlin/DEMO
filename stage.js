@@ -2,6 +2,7 @@
  * Set up some basics for getting the game loading 
  * TODO show a splash screen with progress
  */
+var gameLoader = null;
 var game = null;
 
 /**
@@ -13,6 +14,7 @@ var trace = console.log.bind(console);
 /*
  * Approx size of a game background; 
  * overwritten when the real background loads.
+ * Uses these numbers to define "size" of game for resizing etc
  */
 var gameWidth = 1136;
 var gameHeight = 640;
@@ -20,7 +22,7 @@ var gameHeight = 640;
 /** Create a new instance of a pixi stage
   * stage = new Stage(0x000000,true);  
   * (Deprecated in V3: just delare a Container and bung everything in it)
-  * TODO also make one for a console?
+  * EVERYTHING goes in here for display
   */
 var stage = new PIXI.Container();
 
@@ -37,19 +39,26 @@ document.body.scroll = "no"; // ie only
 
 /**
  * Window loaded: 
- * Make game Loader and listen for ASSETS_LOADED
- * Start rendering.
+ * Make game Loader and listen for PROFILE_LOADED
  */ 
 document.addEventListener("DOMContentLoaded", function init(){
-  
-  var gameLoader = new GameLoader();
+    gameLoader = new GameLoader();
+    Events.Dispatcher.addEventListener(Event.PROFILE_LOADED, onProfileLoaded);
+    gameLoader.loadProfile();
+});
+
+/**
+ * Game XML arrived: get assets 
+ */
+function onProfileLoaded(){
+  Events.Dispatcher.removeEventListener(Event.PROFILE_LOADED, onProfileLoaded);
   Events.Dispatcher.addEventListener(Event.ASSETS_LOADED, onAssetsLoaded);
-  gameLoader.loadAssets(onAssetsLoaded);
+  gameLoader.loadAssets();
 
   // Start rendering
   requestAnimationFrame( animate );
 
-});
+}
 
 /**
  * Global animation ticker: starts by default when a movie clip
@@ -65,6 +74,8 @@ var globalTicker = PIXI.ticker.shared;
  * Start resizing. 
  */
 function onAssetsLoaded(){
+    Events.Dispatcher.removeEventListener(Event.ASSETS_LOADED, onAssetsLoaded);
+    
     game = new Game();
     game.onAssetsLoaded();
     

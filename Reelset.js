@@ -2,7 +2,7 @@ function Reelset(reelband){
     PIXI.Container.call(this);
     
     // Reel Background    
-    var reelBg = new PIXI.Sprite(PIXI.Texture.fromImage("im/reelbg.png"));
+    var reelBg = new PIXI.Sprite(PIXI.Texture.fromImage("images/reelbg.png"));
     reelBg.position.x = 16;
     reelBg.position.y = 164;
     this.addChild(reelBg);
@@ -34,7 +34,7 @@ function Reelset(reelband){
     this.mask = thing;
     
     // Reels Foreground
-    var reelFg = new PIXI.Sprite(PIXI.Texture.fromImage("im/reelfg.png"));
+    var reelFg = new PIXI.Sprite(PIXI.Texture.fromImage("images/reelfg.png"));
     reelFg.position.x = 16;
     reelFg.position.y = 164;
     this.addChild(reelFg);

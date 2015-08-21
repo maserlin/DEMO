@@ -1,70 +1,69 @@
 function GameLoader(){
     PIXI.loaders.Loader.call(this);
+    
+    this.loadProfile = this.loadProfile.bind(this);   
+    this.loadAssets = this.loadAssets.bind(this);   
+    this.onreadystatechange = this.onreadystatechange.bind(this);
 }
 
 GameLoader.prototype = Object.create(PIXI.loaders.Loader.prototype);
 GameLoader.prototype.constructor = GameLoader;
+GameLoader.prototype.oReq = null;
 
-// Temp XML loader
-var oReq;
 
-GameLoader.prototype.loadAssets = function(callbackOnDone){
-
-    /* 
-     * Rough and ready code to asynchronously load an XML file 
-     * for reading into a configuration: 
-     * Real settings *might* come from server init.
-     */
-    oReq = getXMLHttpRequest();
-    if (oReq != null) {
-        oReq.open("GET", "HolyGrail.xml", true);
-        oReq.onreadystatechange = handler;
-        oReq.send();
+/**
+ * Load the profile first 
+ */
+GameLoader.prototype.loadProfile = function(){
+    this.oReq = getXMLHttpRequest();
+    if (this.oReq != null) {
+        this.oReq.open("GET", "profile.xml", true);
+        this.oReq.onreadystatechange = this.onreadystatechange;
+        this.oReq.send();
     }
     else {
         window.console.log("AJAX (XMLHTTP) not supported.");
     }
+}
 
-/*
- * This is a syynchronous loader: interrupts everything while it executes.
-    var xmlDoc = loadXMLDoc("HolyGrail.xml");
-    var converter = new xml2json();
-    console.log(xmlDoc);
-    var json = converter.xml2json(xmlDoc);
-    console.log(JSON.stringify(json));
-*/
+/**
+ * Load assets (inbuilt asynchronous method) 
+ */
+GameLoader.prototype.loadAssets = function(){
 
-
-    this.callback = callbackOnDone || this.callback;
-    var assets = ["im/icons_00_04.json",
-                  "im/icon05.json",
-                  "im/icon06.json",
-                  "im/icon07.json",
-                  "im/icon08.json",
-                  "im/icon09.json",
-                  "im/explosion.json",
-                  "im/BlursNStills.json"];
+    var assets = ["images/icons_00_04.json",
+                  "images/icon05.json",
+                  "images/icon06.json",
+                  "images/icon07.json",
+                  "images/icon08.json",
+                  "images/icon09.json",
+                  "images/explosion.json",
+                  "images/BlursNStills.json",
+                  "images/playbutton.json"];
     
-    assets.push("im/bunny.png");
-    assets.push("im/bg.jpg");
+    assets.push("images/bg.jpg");
+    assets.push("images/bg2.jpg");
     this.add(assets);
     this.once('complete',this.onAssetsLoaded);
     this.on('progress', this.onProgress);
     this.load();
 }
 
-function handler()
+GameLoader.prototype.onreadystatechange = function()
 {
-    if (oReq.readyState == 4 /* complete */) {
-        if (oReq.status == 200) {
-            console.log(oReq.responseText);
+    if (this.oReq.readyState == 4 /* complete */) {
+        if (this.oReq.status == 200) {
+            console.log("Loaded XML:");
+            console.log(this.oReq.responseText);
+            GameConfig.getInstance().setConfig(this.oReq.responseText);
+            
+            Events.Dispatcher.dispatchEvent(new Event(Event.PROFILE_LOADED));
         }
     }
 }
 
 /**
  * Gets a valid request object on any platform (in theory)
- * TODO test this on devices! 
  */
 function getXMLHttpRequest() 
 {
@@ -81,38 +80,25 @@ function getXMLHttpRequest()
     }
 }
 
-/*
- * Synchronous loader code...
-function loadXMLDoc(filename)
-{
-    if (window.XMLHttpRequest)
-    {
-        xhttp=new XMLHttpRequest();
-    }
-    else // code for IE5 and IE6
-    {
-        xhttp=new ActiveXObject("Microsoft.XMLHTTP");
-    }
-    xhttp.open("GET",filename,false);
-    xhttp.send();
-    return xhttp.responseXML;
-}
-*/
 
+/**
+ * Report loading progress:
+ * TODO access this data on loading screen. 
+ * TODO A loading screen ;-)
+ */
 GameLoader.prototype.onProgress = function(data){
     console.log(data.progress);
 }
 
+/**
+ * Dispatch event on complete 
+ * @param {Object} data
+ */
 GameLoader.prototype.onAssetsLoaded = function(data){
     for ( var obj in data.resources){
         console.log("Loaded " + obj);
     }
-//    this.callback();
     
     Events.Dispatcher.dispatchEvent(new Event(Event.ASSETS_LOADED));
-    
 }
 
-GameLoader.prototype.callback = function(){
-    console.log("Make callback");
-}
