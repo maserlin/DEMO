@@ -1,6 +1,6 @@
 {"frames": {
 
-"p1.png":
+"playbutton1.png":
 {
 	"frame": {"x":0,"y":0,"w":128,"h":128},
 	"rotated": false,
@@ -8,7 +8,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
 	"sourceSize": {"w":128,"h":128}
 },
-"p2.png":
+"playbutton2.png":
 {
 	"frame": {"x":128,"y":0,"w":128,"h":128},
 	"rotated": false,

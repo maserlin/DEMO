@@ -12,6 +12,7 @@ function GameConfig(){
     this.setReels();
 
     this.serverUrl = "http:\\\\10.32.10.73:8090\\PIXI";
+    this.serverUrl = "http:\\\\192.168.0.7:8090\\PIXI";
 }
 GameConfig.prototype = Object.create(Configuration.prototype);
 GameConfig.constructor = GameConfig;
