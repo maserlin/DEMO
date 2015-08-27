@@ -1,32 +1,15 @@
-/**
- * A graphical button to handle spin requests:
- * It has multiple function though:
- * First press: Send a bet (and spin the reels!)
- * Second press: set reels to quick-stop (turbo mode) as soon as a result is available.
- * Next press: Cancel win animations and skip to next action ie start freespins or bonus if flagged.
- *
- * Spin button functionality can get fairly complex so make sure you're well in control of its state.
- *
- * @param imageName
- * @param posX
- * @param posY
- * @param name
- * @constructor
- */
-function SpinButton(imageName,posX,posY,name){
+function MovieClipButton(imageName,posX,posY,name){
     this.actions = [];
-    this.state = SpinButton.IDLE;
-    this.name = name || "spinButton";
+    this.state = MovieClipButton.IDLE;
+    this.name = name || "MovieClipButton";
     
-
-    var spinButtonTextures = [];
+    var MovieClipButtonTextures = [];
     for(var i=0; i<62; i+=2)
     {
-        var texture = PIXI.Texture.fromFrame(imageName + (i+1) +".png");
-        spinButtonTextures.push(texture);
+        var texture = PIXI.Texture.fromFrame(imageName + (i+1) + ".png");
+        MovieClipButtonTextures.push(texture);
     }
-
-    this.button = new PIXI.extras.MovieClip(spinButtonTextures);
+    this.button = new PIXI.extras.MovieClip(MovieClipButtonTextures);
     this.button.position.x = posX || 100;
     this.button.position.y = posY || 100;
     this.button.anchor.x = this.button.anchor.y = 0.5;
@@ -35,7 +18,6 @@ function SpinButton(imageName,posX,posY,name){
     this.button.gotoAndPlay(0);
     this.button.interactive = true;
     
-    this.curFrame = 0;
     // Fix scope
     this.clicked = false;
     this.buttonClick = this.buttonClick.bind(this);
@@ -53,22 +35,22 @@ function SpinButton(imageName,posX,posY,name){
     this.onAllReelsSpinning = this.onAllReelsSpinning.bind(this);
     Events.Dispatcher.addEventListener(Event.ALL_REELS_SPINNING,this.onAllReelsSpinning);
 };
-SpinButton.prototype.name = null;
+MovieClipButton.prototype.name = null;
 
-    SpinButton.IDLE = 0;
-    SpinButton.SPIN = 1;
-    SpinButton.STOP = 2;
+    MovieClipButton.IDLE = 0;
+    MovieClipButton.SPIN = 1;
+    MovieClipButton.STOP = 2;
 
 
 
-SpinButton.prototype.setVisible = function(vis){
+MovieClipButton.prototype.setVisible = function(vis){
     this.button.visible = vis;
 } 
 
 /**
  * Try to deal with some Droid double-tap issue
  */
-SpinButton.prototype.onAllReelsSpinning = function(){
+MovieClipButton.prototype.onAllReelsSpinning = function(){
     this.clicked = false;
 }
 
@@ -76,8 +58,8 @@ SpinButton.prototype.onAllReelsSpinning = function(){
  * Clicks may fire twice on certain android devices
  * but only once on iPad or desktop or other Androids. 
  */
-SpinButton.prototype.buttonClick = function(){
-        //this.button.gotoAndStop(1-this.curFrame);
+MovieClipButton.prototype.buttonClick = function(){
+        this.button.gotoAndPlay(0);
     if(!this.clicked){
         this.clicked = true;
         this.performStateAction();
@@ -88,36 +70,36 @@ SpinButton.prototype.buttonClick = function(){
 }
 
 
-SpinButton.prototype.onAllReelsStopped = function(event){
-    this.state = SpinButton.IDLE;
+MovieClipButton.prototype.onAllReelsStopped = function(event){
+    this.state = MovieClipButton.IDLE;
     this.clicked = false;
 }
 
 /**
  * Perform action and move to next state
  */
-SpinButton.prototype.performStateAction = function(state){
+MovieClipButton.prototype.performStateAction = function(state){
     
     if(state != null)this.state = state;
     else{
         switch(this.state){
-            case SpinButton.IDLE:
-                this.state = SpinButton.SPIN;
+            case MovieClipButton.IDLE:
+                this.state = MovieClipButton.SPIN;
                 // Listened to by Game to provide timings
                 Events.Dispatcher.dispatchEvent(new Event(Event.SPIN,this));
                 break;
-            case SpinButton.SPIN:
-                this.state = SpinButton.STOP;
+            case MovieClipButton.SPIN:
+                this.state = MovieClipButton.STOP;
                 // Listened to by Game to provide timings and stopPositions
                 Events.Dispatcher.dispatchEvent(new Event(Event.STOP,this));
                 break;
-            case SpinButton.STOP:
+            case MovieClipButton.STOP:
                 break;
         }
     }
 }
 
-SpinButton.prototype.setState = function(state){
+MovieClipButton.prototype.setState = function(state){
     this.state = state;
 };
 

@@ -8,9 +8,10 @@ console.log("Console.js loaded");
 function Console()
 {
     PIXI.Container.call(this);
-    this.spinButton = new SpinButton("Icon05_");
-    this.cheatButton = new SpinButton("Icon06_",0,300,"cheat");
-    
+//    this.spinButton = new SpinButton("playbutton");
+    this.spinButton = new SpinButton("Icon06_",0,100,"spin");
+    this.cheatButton = new SpinButton("Icon05_",0,300,"cheat");
+
     this.addChild(this.spinButton.button);
     this.addChild(this.cheatButton.button);
         
