@@ -1,36 +1,40 @@
 /**
- * Set up some basics for getting the game loading 
+ * App entry point for the game.
+ * First, set up some basics for getting the game loading
  * TODO show a splash screen with progress
+ *
+ * It is entirely likely that the index page loading this will itself be loaded by an outside
+ * wrapper html and appear inside that page's iFrame.
+ * Communication between the game and the server may be done via this wrapper, or directly
+ * using parameters decoded from the loading page's url query string.
+ * This example loads directly from an index page so the comms logic is somewhat simplified as a result.
+ * Some extra steps may need to be wired in to progress the game.
+ * A loading screen *may* be run by the wrapper page in which case you need to get a (global) handle to it
+ * here so that it can be communicated with in whatever way it wants, for example.
  */
 var gameLoader = null;
 var game = null;
 
 /**
- * trace to console.log: easy to turn all off
- * use trace instead of console.log in game code
+ * Convert console.log to use this trace method: makes it easy to turn all output off
+ * (use trace instead of console.log in game code)
+ * set trace = function(args){}; to stop output
  */
-var trace = console.log.bind(console);
+var trace = console.log.bind(console);// function(args){};
 
 /*
  * Approx size of a game background; 
  * overwritten when the real background loads.
- * Uses these numbers to define "size" of game for resizing etc
+ * Modules use these numbers to define "size" of game for resizing etc
  */
 var gameWidth = 1136;
 var gameHeight = 640;
 
-/** Create a new instance of a pixi stage
-  * stage = new Stage(0x000000,true);  
-  * (Deprecated in V3: just delare a Container and bung everything in it)
-  * EVERYTHING goes in here for display
-  */
+// EVERYTHING goes in here for display. It represents the main displayList.
 var stage = new PIXI.Container();
 
-// Get the current size of the window
-var size = getWindowBounds();
-
 // Create a renderer instance to fit window.
-var renderer = PIXI.autoDetectRenderer(size.x, size.y);
+var renderer = PIXI.autoDetectRenderer(getWindowBounds().x, getWindowBounds().y);
 
 // Add the renderer view element to the DOM
 document.body.appendChild(renderer.view);
@@ -39,7 +43,12 @@ document.body.scroll = "no"; // ie only
 
 /**
  * Window loaded: 
- * Make game Loader and listen for PROFILE_LOADED
+ * Make game Loader and listen for PROFILE_LOADED (reels, symbols, paytable, winlines data)
+ * Once we have the profile we can build the reels etc
+ * NOTE
+ * Some systems get their profile information from a server request
+ * in which case the game will have to be initialised first so a call can be made.
+ * Alternatively load a profile file and then overwrite with server profile at a later stage.
  */ 
 document.addEventListener("DOMContentLoaded", function init(){
     gameLoader = new GameLoader();
@@ -48,7 +57,7 @@ document.addEventListener("DOMContentLoaded", function init(){
 });
 
 /**
- * Game XML arrived: get assets 
+ * Game XML arrived: get assets (spritesheet images etc)
  */
 function onProfileLoaded(){
   Events.Dispatcher.removeEventListener(Event.PROFILE_LOADED, onProfileLoaded);
@@ -61,10 +70,13 @@ function onProfileLoaded(){
 }
 
 /**
- * Global animation ticker: starts by default when a movie clip
- * e.g. our spin button is declared.
+ * Global animation ticker: starts by default when any movie clip
+ * e.g. our spin button is first declared.
  * We can attach and remove bound functions to it at will
- * to put ourselves "in the loop" for animating reels, winlines, win splashes etc. 
+ * to put ourselves "in the loop" for animating reels, winlines, win splashes etc.
+ * This means there is only ever ONE animation loop running so it's easy to
+ * suspend and restart the game (which happens by default when page is minimised
+ * or loses focus as it is tied to requestAnimationFrame)
  */
 var globalTicker = PIXI.ticker.shared;
 
@@ -83,6 +95,8 @@ function onAssetsLoaded(){
     gameHeight = game.gameBackground.getBounds().height;
     
     window.addEventListener('resize', onWindowResize);
+
+    // Force first resize.
     onWindowResize();
 };
 
@@ -96,7 +110,11 @@ function animate() {
 };
 
 /**
- * Handle window resizing 
+ * Handle window resizing.
+ * Dispatches an event with the window size and scale so any module listening
+ * for this can resize or reposition itself appropriately.
+ * Usually the background just centers itself while the main game components
+ * like the reelset will resize as well to maintain a nice aspect.
  */ 
 function onWindowResize(resizeEvent){
     var size = getWindowBounds();
@@ -107,11 +125,11 @@ function onWindowResize(resizeEvent){
     // Calculate scale based on background dimensions (gameWidth, gameHeight)
     var scale = getWindowScale();
     
-    // Dispatch a RESIZE event: any interested object can listen and take action.
+    // Dispatch a RESIZED event: any interested object can listen and take action.
     var data = Object.create(null);
     data.size = size;
     data.scale = scale;
-    Events.Dispatcher.dispatchEvent( new Event(Event.RESIZE,data));
+    Events.Dispatcher.dispatchEvent( new Event(Event.RESIZED,data));
 };
 
 /**
@@ -137,11 +155,13 @@ function getWindowBounds(){
 
 /**
  * UTILS: Create Point class
- */ 
+ */
 function Point(x, y){
   this.x = x;
   this.y = y;
 };
+Point.prototype.x = null;
+Point.prototype.y = null;
 
 /**
  * UTILS: Create Rectangle class
@@ -152,6 +172,10 @@ function Rectangle(x,y,w,h){
     this.width = w;
     this.height = h;
 };
+Rectangle.prototype.x = null;
+Rectangle.prototype.y = null;
+Rectangle.prototype.width = null;
+Rectangle.prototype.height = null;
 
 /**
  * UTILS: Array randomiser
@@ -169,23 +193,25 @@ function shuffleArray(array) {
 };
 
 /**
- *  UTILS: return a valid DOM document 
+ *  UTILS: return a valid DOM document from a String
  */
 function createDoc(xmlData)
 {
-    var xmlDoc; 
- 
+    var xmlDoc = null;
+
     // Parse server XML
-    if (window.DOMParser)
+    if( window.DOMParser )
     {
-        parser=new DOMParser();
-        xmlDoc=parser.parseFromString(xmlData, "text/xml");
+        parser = new DOMParser();
+        xmlDoc = parser.parseFromString( xmlData, "text/xml" );
     }
     else // Internet Explorer
     {
-        xmlDoc=new ActiveXObject("Microsoft.XMLDOM");
-        xmlDoc.async=false;
-        xmlDoc.loadXML(xmlData);
-    } 
+        xmlDoc = new ActiveXObject( "Microsoft.XMLDOM" );
+        xmlDoc.async = false;
+        xmlDoc.loadXML( xmlData );
+    }
+
+    //
     return xmlDoc;
 };

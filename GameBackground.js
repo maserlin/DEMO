@@ -22,7 +22,7 @@ function GameBackground(imageUrls){
     
     // Set resizing
     this.resize = this.resize.bind(this);
-    Events.Dispatcher.addEventListener(Event.RESIZE, this.resize);
+    Events.Dispatcher.addEventListener(Event.RESIZED, this.resize);
 
     this.change = this.change.bind(this);
     this.swap = this.swap.bind(this);
@@ -36,7 +36,7 @@ GameBackground.prototype.backgrounds = null;
 
 /**
  * 
- * @param {Object} event: "RESIZE", event.data.size (Point), event.data.scale (Point)
+ * @param {Object} event: "RESIZED", event.data.size (Point), event.data.scale (Point)
  */
 GameBackground.prototype.resize = function(event){
     var size = getWindowBounds()

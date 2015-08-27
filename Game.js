@@ -1,17 +1,45 @@
 /**
- * GAME manages all onscreen components individually or in groups. 
+ * GAME manages all onscreen components individually or in groups.
  * Onscreen components are all derived from PIXI.Container so they can be put on the stage
  * and removed as necessary in their logical groups, and can resize as a group, be zoomed in and out
  * or cross-faded etc etc.
+ * For larger projects it may be advisable to split this file up into GameManager and Game,
+ * where GameManager performs all the housekeeping and can load any "Game" and run it transparently.
+ * In this case the "Game" has the following responsibilities:
+ * Build 3 layers to add to the stage: background, game, console. Interaction between these layers
+ * is handled by Events.
+ * Change the backgrounds and game screens (reels, bonus1, bonus2) as appropriate, by event request;
+ * here we cross-fade the screens in and out, but this functionality could be added to GameScreen
+ * to have them fade themselves if that is preferred.
+ * Send Requests to the ServerProxy and field the Responses:
+ * For the ReelsScreen we are handling the results and telling the reels when to start and stop:
+ * again this can be changed to a more appropriate implementation if desired.
+ * For the BonusScreen we aren't doing much, but also we act as the switchboard for request/response.
+ * The value of this is that some servers require some book-keeping calls between the game and
+ * the wrapper or server and we can handle that here without making the game code unnecessarily complex.
  */
-function Game(){
-    this.gameBackground = null;
-    this.bunny = null;
-    this.rect = null;
-    this.reelset = null;
 
+function Game(){
+
+    // Maintain a game background Object to handle aspects of scene changes and stage sizing
+    this.gameBackground = null;
+
+    /*
+     * winCalculator builds a results object given reel positions etc;
+     * Required on some platforms, not on others.
+     */
     this.winCalculator = new WinCalculator();
+
+    /*
+     * Receives results in a variety of formats (xml, json, name=value pairs)
+     * and parses into one format appropriate for all games (usually JSON)
+     */
     this.dataParser = new DataParser(this.winCalculator);
+
+    /*
+     * Sends requests to a server and fields the result. Uses dataParser to determine
+     * validity and signals readiness of response with an Event.
+     */
     this.serverProxy = new ServerProxy(GameConfig.getInstance().serverUrl, this.dataParser);
     
     this.onInitResponseReceived = this.onInitResponseReceived.bind(this);
@@ -20,12 +48,11 @@ function Game(){
     this.onBonusResponseReceived = this.onBonusResponseReceived.bind(this);
     this.onReelsSpinning = this.onReelsSpinning.bind(this);
 
-    
+    // Display layer management
     this.layers = [];
     this.layers[Game.BACKGROUND] = new PIXI.Container();
     this.layers[Game.MAIN] = new PIXI.Container();
     this.layers[Game.CONSOLE] = new PIXI.Container();
-    
 }
 Game.BACKGROUND = "background";
 Game.MAIN = "main";
@@ -37,7 +64,6 @@ Game.prototype.currentScreen = null;
 Game.prototype.validResponseReceived = false;
 Game.prototype.invalidResponseReceived = false;
 Game.prototype.reelsSpinning = false;
-Game.prototype.vhost = null;
 
 
 /**
@@ -79,11 +105,10 @@ Game.prototype.onAssetsLoaded = function(obj){
 
     // Right now we want to show the ReelsScreen
     this.loadScreen = this.loadScreen.bind(this);
+    // Loads the screen into view and sets as currentScreen.
     this.loadScreen(this.reelsScreen);
-    
-    /*
-     * TODO This should be a whole console component in an upper layer. 
-     */
+
+    // UI controls: Spin button, stake up/down etc
     this.console = new Console();
     this.layers[Game.MAIN].addChild(this.console);    
 
@@ -93,7 +118,6 @@ Game.prototype.onAssetsLoaded = function(obj){
     Events.Dispatcher.addEventListener(Event.SPIN,this.onSpinReels);
     Events.Dispatcher.addEventListener(Event.STOP,this.onStopReels);
     
-
     this.onWinDisplayComplete = this.onWinDisplayComplete.bind(this);
     Events.Dispatcher.addEventListener(Event.WIN_DISPLAY_COMPLETE,this.onWinDisplayComplete);    
 
@@ -191,11 +215,11 @@ Game.prototype.fadeIn = function(screen){
     }
 }
 
-
-
-
 /**
  * "WIN_DISPLAY_COMPLETE"
+ * Signal that enough of the win display has completed to allow player to spin again.
+ * Usually this is after the win summary; player may skip the line-by-line win display
+ * OR if there is a bonus flagged, they may want to skip to the bonus start.
  */
 Game.prototype.onWinDisplayComplete = function(){
     console.log("Wins complete");
@@ -203,11 +227,17 @@ Game.prototype.onWinDisplayComplete = function(){
 };
 
 /**
- * 
+ * SPIN has been called by the player.
+ * Alternatively we could listen for a BET_REQUEST, as we sometimes have to validate
+ * the bet with the game wrapper or server before allowing the spin to continue:
+ * here we simply send the bet in the expectation that an invalid bet
+ * will be flagged by the server response value.
  */
 Game.prototype.onSpinReels = function(event){
     console.log("call spin");
     this.foitems = null;
+
+    // If we span using the cheat button, set a result value to be used.
     if(event.data.name == "cheat"){
         console.log("Cheat button");
         this.foitems = [0,29,26,27,25,31];
@@ -215,21 +245,29 @@ Game.prototype.onSpinReels = function(event){
     }
     
     /**
-     * TODO refactor all this to use proper XML & comms and use proper request data
+     * TODO
+     * this is an example bet only.
      */
     var req = Object.create(null);
-    req.code = "BET";
-    req.stake = 200;
-    req.winlines = 20;
+    req.code = Event.BET;
+    req.stake = this.console.getTotalBetInCents();
+    req.winlines = this.console.getNumberOfWinlinesSelected();
     req.foitems = this.foitems;
     
+    /*
+     * Valid bet is OK to send: make Request and tell the reels they may spin.
+     * Listen for a server response and do not stop the reels until
+     * a) all reels are spinning and
+     * b) response received.
+     * This can all be re-wired and delegated to the ReelsScreen itself if required.
+     */
     Events.Dispatcher.addEventListener(Event.VALID_RESPONSE_RECEIVED, this.onBetResponseReceived);
     Events.Dispatcher.addEventListener(Event.INVALID_RESPONSE_RECEIVED, this.onInvalidBetResponseReceived);
     Events.Dispatcher.addEventListener(Event.ALL_REELS_SPINNING,this.onReelsSpinning);
     this.validResponseReceived = false;
     this.invalidResponseReceived = false;
     this.reelsSpinning = false;
-    
+
     this.serverProxy.makeRequest(req);
     this.reelsScreen.spinReels();
 };
@@ -240,6 +278,8 @@ Game.prototype.onSpinReels = function(event){
 Game.prototype.onReelsSpinning = function(event){
     Events.Dispatcher.removeEventListener(Event.ALL_REELS_SPINNING, this.onReelsSpinning);
     this.reelsSpinning = true;
+
+    // Separate these cases to make life easier :)
     if(this.validResponseReceived){
         this.onStopReels();
     }
@@ -249,36 +289,79 @@ Game.prototype.onReelsSpinning = function(event){
 }
 
 /**
- * Don't STOP REELS unless they are all spinning AND result received 
+ * Don't STOP REELS unless they are all spinning AND result received.
+ * THIS MODULE receives the results and acts accordingly:
+ * This can change; delegate to reels screen if required!
  */
 Game.prototype.onBetResponseReceived = function(event){
     Events.Dispatcher.removeEventListener(Event.VALID_RESPONSE_RECEIVED, this.onBetResponseReceived);
     Events.Dispatcher.removeEventListener(Event.INVALID_RESPONSE_RECEIVED, this.onInvalidBetResponseReceived);
     this.validResponseReceived = true;
+
     if(this.reelsSpinning){
         this.onStopReels();
     }
 }
 
+/**
+ * If the reels are all spinning it's safe to stop them.
+ * This is the onError case.
+ * @param event
+ */
 Game.prototype.onInvalidBetResponseReceived = function(event){
     Events.Dispatcher.removeEventListener(Event.VALID_RESPONSE_RECEIVED, this.onBetResponseReceived);
     Events.Dispatcher.removeEventListener(Event.INVALID_RESPONSE_RECEIVED, this.onInvalidBetResponseReceived);
     this.invalidResponseReceived = true;
+
     if(this.reelsSpinning){
         this.onStopReelsOnError();
     }
 }
 
-Game.prototype.onBonusResponseReceived = function(event){
-    this.bonusScreen.responseReceived();    
+/**
+ * A bonus screen has requested some results from the server
+ */
+Game.prototype.onBonusRequest = function(data){
+    var req = Object.create(null);
+    req.code = Event.BONUS;
+    req.id = 1;
+    Events.Dispatcher.addEventListener(Event.VALID_BONUS_RESPONSE_RECEIVED, this.onBonusResponseReceived);
+    Events.Dispatcher.addEventListener(Event.INVALID_BONUS_RESPONSE_RECEIVED, this.onInvalidBonusResponseReceived);
+
+    this.serverProxy.makeRequest(req);
 }
 
+/**
+ * currentScreen should have been set to whichever bonus is in play.
+ * @param event
+ */
+Game.prototype.onBonusResponseReceived = function(event){
+    Events.Dispatcher.removeEventListener(Event.VALID_BONUS_RESPONSE_RECEIVED, this.onBonusResponseReceived);
+    Events.Dispatcher.removeEventListener(Event.INVALID_BONUS_RESPONSE_RECEIVED, this.onInvalidBonusResponseReceived);
+    this.currentScreen.responseReceived(event);
+}
+
+/**
+ * Handle error condition
+ * currentScreen should have been set to whichever bonus is in play.
+ * @param event
+ */
+Game.prototype.onInvalidBonusResponseReceived = function(event){
+    Events.Dispatcher.removeEventListener(Event.VALID_BONUS_RESPONSE_RECEIVED, this.onBonusResponseReceived);
+    Events.Dispatcher.removeEventListener(Event.INVALID_BONUS_RESPONSE_RECEIVED, this.onInvalidBonusResponseReceived);
+    this.currentScreen.invalidResponseReceived(event);
+}
+
+/**
+ * TODO
+ * @param event
+ */
 Game.prototype.onInitResponseReceived = function(event){
     console.log("Init request received");
 }
 
 /**
- * 
+ * Allow the reels to stop at the designated positions.
  */
 Game.prototype.onStopReels = function(){
     var stops = this.dataParser.getReelStops();
@@ -287,7 +370,13 @@ Game.prototype.onStopReels = function(){
 };
 
 /**
- * No server? Or server error! Don't use for real! Do a fake safe-stop!!
+ * No server? Or server error! Construct a fake result.
+ * This may show some wins; what we are doing here is emulating a play-for-fun response.
+ * Don't use this for real ... !!!
+ * Do a fake safe-stop to bring the reels to halt not showing a win.
+ * The game server (when it exists) should be sent a token indicating play-for-fun or
+ * play-for-real so it can maintain the fake or real balance etc. The game need not know
+ * which is in use.
  */
 Game.prototype.onStopReelsOnError = function(){
     var reelset = 0;

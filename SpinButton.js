@@ -1,3 +1,18 @@
+/**
+ * A graphical button to handle spin requests:
+ * It has multiple function though:
+ * First press: Send a bet (and spin the reels!)
+ * Second press: set reels to quick-stop (turbo mode) as soon as a result is available.
+ * Next press: Cancel win animations and skip to next action ie start freespins or bonus if flagged.
+ *
+ * Spin button functionality can get fairly complex so make sure you're well in control of its state.
+ *
+ * @param imageName
+ * @param posX
+ * @param posY
+ * @param name
+ * @constructor
+ */
 function SpinButton(imageName,posX,posY,name){
     this.actions = [];
     this.state = SpinButton.IDLE;

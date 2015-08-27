@@ -1,6 +1,7 @@
 function BonusScreen(winCalculator)
 {
-    PIXI.Container.call(this);
+    GameScreen.call(this);
+//    PIXI.Container.call(this);
     this.winCalculator = winCalculator;
     this.results = winCalculator.getBonusWins();
     console.log("Bonus got results",this.results);
@@ -33,7 +34,8 @@ function BonusScreen(winCalculator)
     this.showWin = this.showWin.bind(this);
     
 }
-BonusScreen.prototype = Object.create(PIXI.Container.prototype);
+//BonusScreen.prototype = Object.create(PIXI.Container.prototype);
+BonusScreen.prototype = Object.create(GameScreen.prototype);
 BonusScreen.constructor = BonusScreen;
 BonusScreen.prototype.alpha = null;
 BonusScreen.prototype.total = null;

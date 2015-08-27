@@ -27,6 +27,11 @@ Configuration.prototype.allow = function(){
     console.log("ALLOW");
 }
 
+
+Configuration.prototype.getNumberOfWinlines = function(){
+    return this.winlines.length;
+}
+
 /**
  * Set whatever we need to from profile xml 
  */

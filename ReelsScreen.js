@@ -1,6 +1,6 @@
 function ReelsScreen(reels_0, winCalculator)
 {
-    PIXI.Container.call(this);
+    GameScreen.call(this);
 
     // non-visual components
     this.winCalculator = winCalculator;
@@ -39,10 +39,10 @@ function ReelsScreen(reels_0, winCalculator)
     Events.Dispatcher.addEventListener(Event.WIN_ANIMATOR_COMPLETE,this.onWinAnimatorComplete);
 
     this.resize = this.resize.bind(this);
-    Events.Dispatcher.addEventListener(Event.RESIZE, this.resize);
+    Events.Dispatcher.addEventListener(Event.RESIZED, this.resize);
     
 }
-ReelsScreen.prototype = Object.create(PIXI.Container.prototype);
+ReelsScreen.prototype = Object.create(GameScreen.prototype);
 ReelsScreen.constructor = ReelsScreen;
 ReelsScreen.prototype.reelset = null;
 ReelsScreen.prototype.winData = null;
