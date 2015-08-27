@@ -144,6 +144,7 @@ Game.prototype.loadScreen = function(screen){
  */
 Game.prototype.onStartBonus = function(){
     console.log("Start Bonus");
+    this.console.hide();
     this.gameBackground.change(GameBackground.REELS_BG,GameBackground.BONUS_BG);
     this.fadeScreen = this.reelsScreen;
     this.onFadedOut = this.onReelsOut;
@@ -163,6 +164,8 @@ Game.prototype.onBonusComplete = function(){
 
 /**
  * "REELS_OUT"
+ * Reels screen has faded out and is no longer showing.
+ * Load the bonus screen.
  */
 Game.prototype.onReelsOut = function(){
     console.log("onReelsOut for Bonus");
@@ -173,15 +176,16 @@ Game.prototype.onReelsOut = function(){
     this.fadeScreen = this.bonusScreen;
     this.onFadedIn = this.bonusScreen.start;
     globalTicker.add(this.fadeIn);
-
-    this.fadeIn(this.bonusScreen);
 };
 
 /**
  * "BONUS_OUT"
+ * Bonus screen has faded out and is no longer showing.
+ * Load the reels screen.
  */
 Game.prototype.onBonusOut = function(){
     console.log("onBonusOut for Reels");
+    this.console.show();
     this.bonusScreen.cleanUp();
     this.layers[Game.MAIN].removeChild(this.bonusScreen);    
     this.loadScreen(this.reelsScreen);    
@@ -189,8 +193,6 @@ Game.prototype.onBonusOut = function(){
     this.fadeScreen = this.reelsScreen;
     this.onFadedIn = this.onWinDisplayComplete;
     globalTicker.add(this.fadeIn);
-
-    this.fadeIn(this.bonusScreen);
 };
 
 Game.prototype.fadeOut = function(){
@@ -381,47 +383,17 @@ Game.prototype.onStopReels = function(){
 Game.prototype.onStopReelsOnError = function(){
     var reelset = 0;
     var stops = [];
-    
-    // Set from faked foitems
-    if(this.foitems != null){
-        reelset = this.foitems.shift();
-        stops = this.foitems.slice(0,5);
-    }
-    
-    // Set random result
-    else {
-        // Decide on bonus 
-        if(Math.floor(Math.random() * GameConfig.getInstance().bonusChance) == 0){
-            
-            reelset = 1;
-            
-            // Set stops
-            for(var reel in GameConfig.getInstance().reels[reelset]){
-                var stop =  Math.floor( Math.random() * GameConfig.getInstance().reels[reelset][reel].length );
-                stops.push(stop);
-            }
-            
-            // Show bonus symbol on the middle reel
-            var reel = GameConfig.getInstance().reels[reelset][2];
-            var index = reel.indexOf(11);
-            var offset = (Math.floor( (Math.random() * 10) ) %3 )-1;
-            index = (index + offset + reel.length) % reel.length;
-            stops[2] = index;
-        } 
-        // no bonus
-        else{
-            reelset = 0;
-            for(var reel in GameConfig.getInstance().reels[reelset]){
-                var stop =  Math.floor( Math.random() * GameConfig.getInstance().reels[reelset][reel].length );
-                stops.push(stop);
-            }
-        }
-        // Safe positions, no bonus
-        // reelset = 0;
-        //stops = [0,9,3,30,4];
-    }
-    
-    this.reelsScreen.stopReels(stops, reelset);
+
+    // Presently creating an actual game result in lieu of a server response.
+    // Should really be just stopping reels in a neutral place as the server
+    // ought to be returning a valid play-for-fun result.
+    this.dataParser.createErrorResult();
+
+    // Safe positions, no bonus
+    // reelset = 0;
+    //stops = [0,9,3,30,4];
+
+    this.reelsScreen.stopReels(this.dataParser.getReelStops(), this.dataParser.getReelLayout());
     console.log("call stop pos " + stops);
 };
 

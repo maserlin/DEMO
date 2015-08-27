@@ -9,7 +9,7 @@ function Configuration(){
 }
 
 /**
- * simple singleton: feel free to improve on this implenetation :) 
+ * simple singleton: feel free to improve on this implementation :)
  */
 Configuration.getInstance = function(){
     if(config == null)config = new Configuration();

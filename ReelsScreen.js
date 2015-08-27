@@ -1,3 +1,12 @@
+/**
+ * Parent is a basic GameScreen object giving us receivers for server responses.
+ * There are many ways to organise the logic of the game but in this example the Game object
+ * is sending and receiving the bet and when it is received and parsed, telling the reels to stop.
+ * Therefore when the reels have stopped we know the data exists and we can show any wins.
+ * @param reels_0
+ * @param winCalculator
+ * @constructor
+ */
 function ReelsScreen(reels_0, winCalculator)
 {
     GameScreen.call(this);
@@ -72,8 +81,7 @@ ReelsScreen.prototype.resize = function(event){
 }
 
 /**
- * 
- * @param {Object} timing: array of start time offsets
+ * The timing for spinning the reels comes from the GameConfiguration
  */
 ReelsScreen.prototype.spinReels = function(){
     this.reelset.spinReels();
@@ -82,23 +90,24 @@ ReelsScreen.prototype.spinReels = function(){
 
 /**
  * 
- * @param {Object} timing : array of stop time offsets
- * @param {Object} stopPos : array of stop positions
+ * Stop timing comes from the GameConfiguration
+ * @param {Array[5]} stopPos : array of stop positions
+ * @param {int} reelsetId : The reelset to stop with (may be different to the ones that are spinning!)
  */
 ReelsScreen.prototype.stopReels = function(stopPos, reelsetId){
     this.reelset.stopReels(stopPos, GameConfig.getInstance().reels[reelsetId]);
 };
 
 /**
- * When all reels are spinning, stop them.
- * TODO Wait for actual result 
+ * Could dispatch an all reels spinning event if required.
  */
 ReelsScreen.prototype.onReelsSpinning = function(){
         // Events.Dispatcher.dispatchEvent(new Event(Event.STOP));
 };
 
 /**
- * When all stopped show win summary, win highlights, etc etc 
+ * When all stopped show win summary, win highlights, etc etc
+ * Reels are not told to stop until the result has arrived so we know it exists in some form.
  */
 ReelsScreen.prototype.onReelsStopped = function(){
     this.winData = this.winCalculator.calculate(this.reelset.getReelMap());

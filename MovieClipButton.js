@@ -1,32 +1,44 @@
+/**
+ * This button only exists to demonstrate that any movieClip can be an interactive button.
+ * When Clicked you can play out the movie and send and receive Events etc. This is very useful
+ * for bonus elements or more complicated buttons than just a standard on/off/click type.
+ * Don't base it on standard Button as that is expecting a certain type of spriteSheet.
+ *
+ * @param imageName
+ * @param posX
+ * @param posY
+ * @param name
+ * @constructor
+ */
 function MovieClipButton(imageName,posX,posY,name){
     this.actions = [];
     this.state = MovieClipButton.IDLE;
     this.name = name || "MovieClipButton";
     
-    var MovieClipButtonTextures = [];
-    for(var i=0; i<62; i+=2)
-    {
-        var texture = PIXI.Texture.fromFrame(imageName + (i+1) + ".png");
-        MovieClipButtonTextures.push(texture);
+    var movieClipButtonTextures = [];
+    for(var i in PIXI.utils.TextureCache){
+        if( String( i ).indexOf( imageName + "_" ) != -1 ){
+            movieClipButtonTextures.push(PIXI.Texture.fromFrame(i));
+        }
     }
-    this.button = new PIXI.extras.MovieClip(MovieClipButtonTextures);
-    this.button.position.x = posX || 100;
-    this.button.position.y = posY || 100;
-    this.button.anchor.x = this.button.anchor.y = 0.5;
-    this.button.animationSpeed = .2;
-    this.button.loop = false;
-    this.button.gotoAndPlay(0);
-    this.button.interactive = true;
+
+    PIXI.extras.MovieClip.call(this, movieClipButtonTextures);
+
+    this.position.x = posX || 100;
+    this.position.y = posY || 100;
+    this.anchor.x = this.anchor.y = 0.5;
+    this.animationSpeed = .2;
+    this.loop = false;
+    this.gotoAndPlay(0);
+    this.interactive = true;
     
     // Fix scope
     this.clicked = false;
-    this.buttonClick = this.buttonClick.bind(this);
-    
     var that = this;
-    this.button.click = function(data){
+    this.click = function(data){
         that.buttonClick();
     }
-    this.button.tap = function(data){
+    this.tap = function(data){
         that.buttonClick();
     }
 
@@ -35,6 +47,8 @@ function MovieClipButton(imageName,posX,posY,name){
     this.onAllReelsSpinning = this.onAllReelsSpinning.bind(this);
     Events.Dispatcher.addEventListener(Event.ALL_REELS_SPINNING,this.onAllReelsSpinning);
 };
+MovieClipButton.prototype = Object.create(PIXI.extras.MovieClip.prototype);
+MovieClipButton.constructor = MovieClipButton;
 MovieClipButton.prototype.name = null;
 
     MovieClipButton.IDLE = 0;
@@ -43,9 +57,15 @@ MovieClipButton.prototype.name = null;
 
 
 
+// Set visibility
 MovieClipButton.prototype.setVisible = function(vis){
-    this.button.visible = vis;
-} 
+    this.visible = vis;
+}
+
+// Play clip on enable
+MovieClipButton.prototype.setEnable = function(enable){
+    if(enable)this.gotoAndPlay(0);
+}
 
 /**
  * Try to deal with some Droid double-tap issue
@@ -59,7 +79,7 @@ MovieClipButton.prototype.onAllReelsSpinning = function(){
  * but only once on iPad or desktop or other Androids. 
  */
 MovieClipButton.prototype.buttonClick = function(){
-        this.button.gotoAndPlay(0);
+        this.gotoAndPlay(0);
     if(!this.clicked){
         this.clicked = true;
         this.performStateAction();

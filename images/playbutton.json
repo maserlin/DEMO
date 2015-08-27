@@ -1,6 +1,6 @@
 {"frames": {
 
-"playbutton1.png":
+"playbutton_down.png":
 {
 	"frame": {"x":0,"y":0,"w":128,"h":128},
 	"rotated": false,
@@ -8,9 +8,25 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
 	"sourceSize": {"w":128,"h":128}
 },
-"playbutton2.png":
+"playbutton_off.png":
 {
 	"frame": {"x":128,"y":0,"w":128,"h":128},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
+	"sourceSize": {"w":128,"h":128}
+},
+"playbutton_on.png":
+{
+	"frame": {"x":256,"y":0,"w":128,"h":128},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
+	"sourceSize": {"w":128,"h":128}
+},
+"playbutton_up.png":
+{
+	"frame": {"x":384,"y":0,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -21,8 +37,8 @@
 	"version": "1.0",
 	"image": "playbutton.png",
 	"format": "RGBA8888",
-	"size": {"w":256,"h":128},
+	"size": {"w":512,"h":128},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:1c24b725a5343918a4738171ebae4140$"
+	"smartupdate": "$TexturePacker:SmartUpdate:8fda1b1196598c9e810144552d4f85f0$"
 }
 }

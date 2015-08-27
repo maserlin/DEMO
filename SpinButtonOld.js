@@ -7,9 +7,6 @@
  *
  * Spin button functionality can get fairly complex so make sure you're well in control of its state.
  *
- * Base class is a standard button implementation with 4 states:
- * up, down, off, on (highlit)
- *
  * @param imageName
  * @param posX
  * @param posY
@@ -17,26 +14,59 @@
  * @constructor
  */
 function SpinButton(imageName,posX,posY,name){
+    this.actions = [];
     this.state = SpinButton.IDLE;
-    Button.call(this, imageName,posX,posY,name);
+    this.name = name || "spinButton";
+
+
+    var spinButtonTextures = [];
+    for(var i in PIXI.utils.TextureCache){
+        console.log(i);
+        if(String(i).indexOf(imageName) != -1){
+            spinButtonTextures.push(PIXI.Texture.fromFrame(i));
+        }
+    }
+
+    this.button = new PIXI.extras.MovieClip(spinButtonTextures);
+    this.button.position.x = posX || 100;
+    this.button.position.y = posY || 100;
+    this.button.anchor.x = this.button.anchor.y = 0.5;
+    this.button.animationSpeed = .2;
+    this.button.loop = false;
+    this.button.gotoAndPlay(0);
+    this.button.interactive = true;
+
+    this.curFrame = 0;
+    // Fix scope
+    this.clicked = false;
+    this.buttonClick = this.buttonClick.bind(this);
+
+    var that = this;
+    this.button.click = function(data){
+        that.buttonClick();
+    }
+    this.button.tap = function(data){
+        that.buttonClick();
+    }
+
     this.onAllReelsStopped = this.onAllReelsStopped.bind(this);
     Events.Dispatcher.addEventListener(Event.ALL_REELS_STOPPED,this.onAllReelsStopped);
     this.onAllReelsSpinning = this.onAllReelsSpinning.bind(this);
     Events.Dispatcher.addEventListener(Event.ALL_REELS_SPINNING,this.onAllReelsSpinning);
 };
-SpinButton.prototype = Object.create(Button.prototype);
-SpinButton.constructor = SpinButton;
+SpinButton.prototype.name = null;
 
     SpinButton.IDLE = 0;
     SpinButton.SPIN = 1;
     SpinButton.STOP = 2;
 
 
+
+SpinButton.prototype.setVisible = function(vis){
+    this.button.visible = vis;
+} 
+
 /**
- * TODO Clicks may fire twice on certain android devices
- * but only once on iPad or desktop or other Androids.
- * May be to do with this function being run onTap AND onClick
- * @see Button.js constructor
  * Try to deal with some Droid double-tap issue
  */
 SpinButton.prototype.onAllReelsSpinning = function(){
@@ -44,15 +74,11 @@ SpinButton.prototype.onAllReelsSpinning = function(){
 }
 
 /**
- * TODO Clicks may fire twice on certain android devices
- * but only once on iPad or desktop or other Androids.
- * May be to do with this function being run onTap AND onClick
- * @see Button.js constructor
+ * Clicks may fire twice on certain android devices
+ * but only once on iPad or desktop or other Androids. 
  */
-SpinButton.prototype.onClick = function(data){
-
-    Button.prototype.onClick.call(this);
-
+SpinButton.prototype.buttonClick = function(){
+        //this.button.gotoAndStop(1-this.curFrame);
     if(!this.clicked){
         this.clicked = true;
         this.performStateAction();
@@ -62,10 +88,7 @@ SpinButton.prototype.onClick = function(data){
     }
 }
 
-/**
- *
- * @param event
- */
+
 SpinButton.prototype.onAllReelsStopped = function(event){
     this.state = SpinButton.IDLE;
     this.clicked = false;

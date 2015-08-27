@@ -8,12 +8,12 @@ console.log("Console.js loaded");
 function Console()
 {
     PIXI.Container.call(this);
-//    this.spinButton = new SpinButton("playbutton");
-    this.spinButton = new SpinButton("Icon06_",0,100,"spin");
-    this.cheatButton = new SpinButton("Icon05_",0,300,"cheat");
+    // Spin button based on a normal 3-state button(up, pressed, inactive)
+    this.spinButton = new SpinButton("playbutton",0,100,"spin");
+    this.cheatButton = new MovieClipButton("Icon05",0,300,"cheat");
 
-    this.addChild(this.spinButton.button);
-    this.addChild(this.cheatButton.button);
+    this.addChild(this.spinButton);
+    this.addChild(this.cheatButton);
         
     this.enable = this.enable.bind(this);
     
@@ -43,13 +43,21 @@ Console.prototype.getNumberOfWinlinesSelected = function(){
     return GameConfig.getInstance().getNumberOfWinlines();
 }
 
-Console.prototype.enable = function(){
+Console.prototype.show = function(){
     this.spinButton.setVisible(true);
     this.cheatButton.setVisible(true);
 }
-Console.prototype.disable = function(){
+Console.prototype.hide = function(){
     this.spinButton.setVisible(false);
     this.cheatButton.setVisible(false);
+}
+Console.prototype.enable = function(){
+    this.spinButton.setEnable(true);
+    this.cheatButton.setEnable(true);
+}
+Console.prototype.disable = function(){
+    this.spinButton.setEnable(false);
+    this.cheatButton.setEnable(false);
 }
 
 
