@@ -1,3 +1,11 @@
+/**
+ * Some game use this in place of a real server;
+ * More of a legacy thing. These days the server does both play for real and play for fun,
+ * and if the server isn't there you just can't play the game.
+ * Not used in the DEMO but included here as potentially interesting code.
+ * @param reels
+ * @constructor
+ */
 function VirtualHost(reels){
     
     this.reels = [];

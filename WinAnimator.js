@@ -1,10 +1,12 @@
 /**
- * Co-ordinates display of wins between winlines and symbols 
+ * Co-ordinates win display animations, winlines, sounds (TODO)
+ * @param reelset: ref to reelset, can animate any given array of symbols to show win
+ * @param winlinesView: draws winlines and symbol bounding boxes
+ * @param winSplash: Shows a summary screen with total win amount
  */
-function WinAnimator(reelset, winCalculator, winlines, winSplash){
+function WinAnimator(reelset, winlinesView, winSplash){
     this.reelset = reelset;
-    this.winCalculator = winCalculator;
-    this.winlines = winlines;
+    this.winlinesView = winlinesView;
     this.winSplash = winSplash;
     
     this.start = this.start.bind(this);
@@ -27,15 +29,14 @@ function WinAnimator(reelset, winCalculator, winlines, winSplash){
 }
 WinAnimator.prototype.winData = null;
 WinAnimator.prototype.reelset = null;
-WinAnimator.prototype.winCalculator = null;
-WinAnimator.prototype.winlines = null;
+WinAnimator.prototype.winlinesView = null;
 WinAnimator.prototype.winSplash = null;
 WinAnimator.prototype.timeout = null;
 
 
 
 /**
- * 
+ * If Player spins, clear everything
  */
 WinAnimator.prototype.onSpin = function(){
     clearTimeout(this.timeout);    
@@ -44,16 +45,16 @@ WinAnimator.prototype.onSpin = function(){
 
 
 /**
- * 
+ * Start win display: all winning lines, clearing after a timeout
  */
 WinAnimator.prototype.start = function(winData){
     this.winData = winData;
     
-    this.winlines.showLineSummary(this.winData);
+    this.winlinesView.showLineSummary(this.winData);
     
     var that = this;
     this.timeout = setTimeout(function(){
-        that.winlines.removeChildren();
+        that.winlinesView.removeChildren();
         that.timeout = setTimeout(function(){
             that.onWinSummaryComplete();
         },500);
@@ -62,7 +63,7 @@ WinAnimator.prototype.start = function(winData){
 }
 
 /**
- * Start the windisplay process with SUMMARY; 
+ * Start the win display process with SUMMARY showing all winning lines
  * TODO sync with sound
  */
 WinAnimator.prototype.onWinSummaryComplete = function(event){
@@ -71,7 +72,7 @@ WinAnimator.prototype.onWinSummaryComplete = function(event){
 }
 
 /**
- * Manage the progress of showing winlines; 
+ * Manage the progress of showing winlines one after the other
  * TODO sync to sound/symbol animations
  */
 WinAnimator.prototype.showNext = function(){
@@ -79,12 +80,12 @@ WinAnimator.prototype.showNext = function(){
         var lineId = this.winData.lines[this.winShown];
         this.numOfSymbols = this.winData.winline[this.winShown].length;        
         console.log("Show",this.numOfSymbols,"symbols on line",lineId);
-        this.winlines.showNextWin(lineId, this.numOfSymbols);
+        this.winlinesView.showNextWin(lineId, this.numOfSymbols);
         ++this.winShown;
         
         var symbols = [];
         for(var s=0; s<this.numOfSymbols; ++s){
-            symbols.push(this.winCalculator.winlines[lineId][s]);
+            symbols.push(GameConfig.getInstance().winlines[lineId][s]);
         }
         console.log("animate symbols " + symbols)
         this.reelset.animate(symbols);
@@ -95,11 +96,15 @@ WinAnimator.prototype.showNext = function(){
     }
 };
 
+/**
+ * Clear current win display and show next
+ * @param event
+ */
 WinAnimator.prototype.onSymbolAnimationComplete = function(event){
     if(--this.numOfSymbols == 0){
         var that = this;
         this.timeout = setTimeout(function(){
-            that.winlines.removeChildren();
+            that.winlinesView.removeChildren();
             that.timeout = setTimeout(function(){
                 that.showNext();
             },500);
@@ -108,10 +113,18 @@ WinAnimator.prototype.onSymbolAnimationComplete = function(event){
     }
 }
 
+/**
+ * Display win total on splash screen
+ * @param event
+ */
 WinAnimator.prototype.onWinLinesComplete = function(event){
         this.winSplash.showTotal(this.winData);
 };
 
+/**
+ * Signal that all win animations are shown.
+ * @param event
+ */
 WinAnimator.prototype.onWinSplashComplete = function(event){
     Events.Dispatcher.dispatchEvent(new Event(Event.WIN_ANIMATOR_COMPLETE));  
 }

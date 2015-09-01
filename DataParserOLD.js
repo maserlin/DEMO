@@ -1,30 +1,12 @@
 /**
  * Game specific data parser.
- *
- * NOTE this file is very disorganised. Its function is to decode server responses and translate them
- * into a format that any game can read, in order to display the results to the Player.
- * Exactly how you do this depends on what the server is returning:
-    * XML
-    * JSON
-    * name-value string
-    * masses of data or just new reel positions and balance
- * and what you think the game will require:
-     * XML that it can decode on the fly
-     * JSON that it can read directly
-     * some other proprietary format.
- * In addition you can code this file as an Object to be passed around, a Singleton (since there should
- * only ever be ONE of these) or a static object (same reason).
- *
- * One way to use it: decode the server response and return true or false (for valid or invalid response/server error)
- * then signal the game using Events that the response is ready so it can stop the reels and collect whatever
- * parts of the response it requires in its own time.
  */
     
     function DataParser(){
         this.x2js = new xml2json();
         console.log("Created DataParser");
         this.winCalculator = new WinCalculator();
-
+        
         this.responseIsValid = this.responseIsValid.bind(this);
         this.cleanObject = this.cleanObject.bind(this);
         this.parseResponse = this.parseResponse.bind(this);
@@ -64,12 +46,8 @@ DataParser.prototype.responseIsValid = function( responseData )
 
     return true;
 };
-
-/**
- * Used to delete all data from data holders to make sure memory is reused and
- * old data does not pollute the current result
- * @param dataobj
- */
+    
+    
 DataParser.prototype.cleanObject = function(dataobj)
 {
     for(var prop in dataobj){
@@ -238,69 +216,19 @@ DataParser.prototype.parseResponse = function( code, responseXml )
     DataParser.prototype.getReelLayout = function(){
         return this.resultsJson.Spin.layout;
     }
-    DataParser.prototype.getBonusWins = function(){
-        return this.winCalculator.getBonusWins();
-    }
-    DataParser.prototype.getWinData = function(){
-        return this.winData;
-    }
-
+    
     
     /**
      * Use the received XML or other response, now parsed to JSON,
      * to create platform-independent JSON for the game.
-     * There are MANY ways to do this: Via a Singleton, via static data object/s,
-     * by using the XML directly extracting the required results JIT in the code,
-     * by parsing to JSON and using that, by converting to a common data format
-     * for all games to reduce overhead in the gamecode.
-     * Whichever method you use is up to you.
-     *
-     * In this demo I am using the client-side WinCalculator object to work out
-     * the game-specific results from the reel positions supplied by the server.
-     *
-     * A truly dumb client decodes the response or uses it directly to drive the game interface,
-     * but some server only send the reel positions through, leaving the results calculation to the client.
-     * this also exposes soem of the underlying maths to the Player should they care to look :-(
      */
     DataParser.prototype._createResultsResponse = function ()
     {
-        this.resultsJson.Spin = Object.create(null);
-        this.resultsJson.Spin.layout = parseInt(this.objResultsJson._layout, 10);
-
-        // Get new stop positions as ints
-        this.resultsJson.Spin.stops = this.objResultsJson._position.split( "," );
-        for( i in this.resultsJson.Spin.stops )
-        {
-            this.resultsJson.Spin.stops[i] = parseInt( this.resultsJson.Spin.stops[i], 10 );
-        }
-
-        var reelMap = [];
-        // Ensure ints for array of final symbols-in-view.
-        var arrSymbols = this.objResultsJson._symbols.split( "," );
-        for( i in arrSymbols )
-        {
-            arrSymbols[i] = parseInt( arrSymbols[i], 10 );
-        }
-
-        for( var s = 0; s < arrSymbols.length; s += 3 )
-        {
-            reelMap.push( arrSymbols.slice( s, 3 + s ) );
-        }
-
-        this.winData = this.winCalculator.calculate( reelMap );
-    }
-
-/**
- * unused (old) method that turns the incoming XML (parsed into JSON) into a game-friendly
- * JSON format good for any game.
- * This DEMO uses the above winCalculator to achieve the same kind of thing in a lighter way.
- */
-    DataParser.prototype.unused = function(){
         var i = 0;
 
         /*
-         * this.resultsJson should be already new-ed
-         * and the request code attached as code:Bet
+         * this.resultsJson should be already new-ed 
+         * and the request code attached as code:Bet 
          */
         this.resultsJson.Spin = Object.create(null);
         this.resultsJson.Spin.stake = parseFloat(this.objResultsJson._stake);
@@ -309,22 +237,22 @@ DataParser.prototype.parseResponse = function( code, responseXml )
         this.resultsJson.Spin.maxWin = this.objResultsJson._maxWin == "false" ? false : true;
         this.resultsJson.Spin.layout = parseInt(this.objResultsJson._layout, 10);
         this.resultsJson.Spin.balance = Number(this.objResultsJson._flBalance);
-
+        
         // Ensure ints for new stop positions
         this.resultsJson.Spin.stops = this.objResultsJson._position.split(",");
         for( i in this.resultsJson.Spin.stops ){
             this.resultsJson.Spin.stops[i] = parseInt(this.resultsJson.Spin.stops[i], 10);
         }
-
-        // Ensure ints for array of final symbols-in-view.
+    
+        // Ensure ints for array of final symbols-in-view. 
         this.resultsJson.Spin.arrSymbols = this.objResultsJson._symbols.split(",");
         for( i in this.resultsJson.Spin.arrSymbols ){
             this.resultsJson.Spin.arrSymbols[i] = parseInt(this.resultsJson.Spin.arrSymbols[i], 10);
         }
-
+    
         // Record any winlines
         this.resultsJson.Spin.arrWinlines = [];
-
+    
         //
         if(this.objResultsJson.Winlines.__cnt > 0){
             for(var wl=0; wl<this.objResultsJson.Winlines.Winline_asArray.length; ++wl){
@@ -346,7 +274,7 @@ DataParser.prototype.parseResponse = function( code, responseXml )
         // -- Freespins
         if(this.objResultsJson.Freespins != null){
             /*
-             * Top level data telling us how many spins we got and where the scatters are on the reels.
+             * Top level data telling us how many spins we got and where the scatters are on the reels. 
              * NOTE: This is agglomerated into a single result if the firat freespin hits maxWin!
              */
             this.resultsJson.Freespins = Object.create(null);
@@ -354,10 +282,10 @@ DataParser.prototype.parseResponse = function( code, responseXml )
             this.resultsJson.Freespins.intIndex = parseInt(this.objResultsJson.Freespins._index, 10);
             this.resultsJson.Freespins.intAward = parseInt(this.objResultsJson.Freespins._award, 10);
             this.resultsJson.Freespins.intMultiplier = parseInt(this.objResultsJson.Freespins._multiplier, 10);
-
+            
             // Create array of freespin results
             this.resultsJson.Freespins.arrFreespin = [];
-
+            
             /*
              * Check that we have an ARRAY of freespins. If not then there's only one
              * due to maxWin being hit on the first freespin.
@@ -403,7 +331,7 @@ DataParser.prototype.parseResponse = function( code, responseXml )
             }
             /*
              * Only one freespin result due to maxWin hit on first freespin.
-             * We need to check that the array position magic numbers here are
+             * We need to check that the array position magic numbers here are 
              * the right ones to use.
              * [13,       // [0] no idea
                 Object,   // [1] winlines
@@ -415,8 +343,8 @@ DataParser.prototype.parseResponse = function( code, responseXml )
                 "14",     // [7] layout
                 "true",   // [8] maxWin
                 "4",      // [9] multiplier
-                "36,18,16,11,28", // [10] stop positions
-                "7.50",   // [11] spinWin (this spin)
+                "36,18,16,11,28", // [10] stop positions 
+                "7.50",   // [11] spinWin (this spin)  
                 "2.00",   // [12] stake
                 "3,12,6,6,1,0,12,2,0,0,1,4,1,12,2", // [13] symbols
                 "10.00"] // [14] totalWin spins + freespins
@@ -424,15 +352,15 @@ DataParser.prototype.parseResponse = function( code, responseXml )
             else{
                 var spin = this.objResultsJson.Freespins.Freespin;
                 var freespin = Object.create(null);
-
+                
                 freespin.intAward = parseInt(spin[3], 10);
                 freespin.intIndex = parseInt(spin[5], 10);
                 freeSpin.spinWin = parseFloat(spin[11]);
                 freespin.flFreespinsWin = parseFloat(spin[4]);
                 freeSpin.layout = parseInt(spin[7], 10);
-
+                
                 freeSpin.maxWin = spin[8] == "false" ? false : true;
-
+                
 
                 //
                 freeSpin.stops = spin[10].split(",");
@@ -568,22 +496,4 @@ DataParser.prototype.buildBalanceUpdateRequest = function (){
     return "<CustomerBalanceRequest />";
 };
 
-/**
- * Helper object
- */
-function WinlineResult(jsonData)
-{
-    this.intId = parseInt(jsonData._id, 10);
-    this.intSymbolId = parseInt(jsonData._symbol, 10);
-    this.intCount = parseInt(jsonData._count, 10);
-    this.flWin = parseFloat(jsonData._win);
-    this.arrSymbols = jsonData._symbols.split(",");
-}
-
-WinlineResult.prototype.intId;
-WinlineResult.prototype.intSymbolId;
-WinlineResult.prototype.intCount;
-WinlineResult.prototype.flWin;
-WinlineResult.prototype.arrSymbols;
-
-
+    

@@ -3,31 +3,38 @@
  * There are many ways to organise the logic of the game but in this example the Game object
  * is sending and receiving the bet and when it is received and parsed, telling the reels to stop.
  * Therefore when the reels have stopped we know the data exists and we can show any wins.
- * @param reels_0
+ * @param initialReelset
  * @param winCalculator
  * @constructor
  */
-function ReelsScreen(reels_0, winCalculator)
+function ReelsScreen(initialReelset, dataParser)
 {
     GameScreen.call(this);
 
-    // non-visual components
-    this.winCalculator = winCalculator;
+    // non-visual component: could be a singleton
+    this.dataParser = dataParser;
 
     // Reelset is a container which builds up the reels components in order:
-    // ReelBg, Reels x5, a mask for clipping the top and bottom, and reelFg overlay   
-    this.reelset = new Reelset(reels_0);
+    // ReelBg, Reels x5, a mask for clipping the top and bottom, and reelFg overlay
+    this.reelset = new Reelset(initialReelset);
     this.addChild(this.reelset);
 
-    this.winlines = new Winlines();
-    this.addChild(this.winlines);
-    
+    // winlinesView draws the winlines
+    this.winlinesView = new WinlinesView();
+    this.addChild(this.winlinesView);
+
     // Tell it where to draw relative to us
     this.winSplash = new WinSplash(new Point(this.width/2,this.height/2));
     this.addChild(this.winSplash);
 
-    // Manager: non-visual
-    this.winAnimator = new WinAnimator(this.reelset, this.winCalculator, this.winlines, this.winSplash);
+    /*
+     * Manager: non-visual controller app.
+     * reelset: winAnimator tells it which symbols to animate
+     * winlinesView: used to get the positions of symbols in the win
+     * winSplash: animates the splashScreen.
+     * All these components are added to this display container so they resize together
+     */
+    this.winAnimator = new WinAnimator(this.reelset, this.winlinesView, this.winSplash);
 
     // Center ourselves onscreen
     this.pivot.x = this.width/2;
@@ -49,33 +56,34 @@ function ReelsScreen(reels_0, winCalculator)
 
     this.resize = this.resize.bind(this);
     Events.Dispatcher.addEventListener(Event.RESIZED, this.resize);
-    
+
 }
 ReelsScreen.prototype = Object.create(GameScreen.prototype);
 ReelsScreen.constructor = ReelsScreen;
+ReelsScreen.prototype.dataParser = null;
 ReelsScreen.prototype.reelset = null;
 ReelsScreen.prototype.winData = null;
-ReelsScreen.prototype.winlines = null;
+ReelsScreen.prototype.winlinesView = null;
 ReelsScreen.prototype.winSplash = null;
-ReelsScreen.prototype.winCalculator = null;
+ReelsScreen.prototype.winAnimator = null;
 ReelsScreen.scaleDown = 1;//0.85;
 
 
 /**
  * Resize and scale the entire reels screen to suit the game's requirements.
- * NOTE this is the only size/scale code for the entire reels screen and all its components. 
+ * NOTE this is the only size/scale code for the entire reels screen and all its components.
  */
 ReelsScreen.prototype.resize = function(event){
     var data = event.data;
-    
+
     // Scale both by X to maintain aspect ratio
     this.scale.x = data.scale.x * ReelsScreen.scaleDown;
     this.scale.y = data.scale.x * ReelsScreen.scaleDown;
-    
+
     // Reposition to center
     this.position.x = (data.size.x/2);
     this.position.y = data.size.y/2;
-    
+
     // Reset all positioning data for win display components
     this.reelset.setSymbolData();
 }
@@ -89,7 +97,7 @@ ReelsScreen.prototype.spinReels = function(){
 
 
 /**
- * 
+ *
  * Stop timing comes from the GameConfiguration
  * @param {Array[5]} stopPos : array of stop positions
  * @param {int} reelsetId : The reelset to stop with (may be different to the ones that are spinning!)
@@ -108,10 +116,12 @@ ReelsScreen.prototype.onReelsSpinning = function(){
 /**
  * When all stopped show win summary, win highlights, etc etc
  * Reels are not told to stop until the result has arrived so we know it exists in some form.
+ * DataParser received the server result and has the win details
  */
 ReelsScreen.prototype.onReelsStopped = function(){
-    this.winData = this.winCalculator.calculate(this.reelset.getReelMap());
-    
+
+    this.winData = this.dataParser.getWinData();
+
     if(this.winData.lines.length > 0){
         this.winAnimator.start(this.winData);
     }

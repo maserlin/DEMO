@@ -1,10 +1,11 @@
-console.log("Winlines.js loaded")
+console.log("WinlinesView.js loaded")
 /**
- * This class draws basic winlines linking up the symbols in a win for each given winline 
+ * This class draws basic WinlinesView linking up the symbols in a win for each given winline 
  * It also draws basic bounding boxes around each symbol in a win linked with a line to join them up.
  * Its base class is a PIXI.Container. Use addChild to display graphics.
+ * TODO draw a little box above or below the central symbol to show the win value.
  */
-function Winlines(){
+function WinlinesView(){
     PIXI.Container.call(this);
     
     // Data about symbol sizes and positions.
@@ -48,23 +49,23 @@ function Winlines(){
         //this._showLines([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]);
     }
 }
-Winlines.prototype = Object.create(PIXI.Container.prototype);
-Winlines.constructor = Winlines;
-Winlines.prototype.symbolData = null;
-Winlines.prototype.ySpacing = null;
-Winlines.prototype.colours = null;
-Winlines.prototype.colour = null;
-Winlines.prototype.winShown = 0;
-Winlines.prototype.winData = null;
-Winlines.prototype.lineWidth = 6;
-Winlines.prototype.rounding = 3;
-Winlines.prototype.demoMode = false;
+WinlinesView.prototype = Object.create(PIXI.Container.prototype);
+WinlinesView.constructor = WinlinesView;
+WinlinesView.prototype.symbolData = null;
+WinlinesView.prototype.ySpacing = null;
+WinlinesView.prototype.colours = null;
+WinlinesView.prototype.colour = null;
+WinlinesView.prototype.winShown = 0;
+WinlinesView.prototype.winData = null;
+WinlinesView.prototype.lineWidth = 6;
+WinlinesView.prototype.rounding = 3;
+WinlinesView.prototype.demoMode = false;
 
 
 /**
  * Clear everything off the screen when SPIN called. 
  */
-Winlines.prototype.onSpin = function(event){
+WinlinesView.prototype.onSpin = function(event){
     this.demoMode = false;
     this.removeChildren();
     clearTimeout(this.timeout);
@@ -73,7 +74,7 @@ Winlines.prototype.onSpin = function(event){
 /**
  * Runs demo mode attractor 
  */
-Winlines.prototype.demoLines = function(){
+WinlinesView.prototype.demoLines = function(){
     
     // Cycle around if we've done the last one    
     if(this.winShown == GameConfig.getInstance().winlineColours.length){
@@ -95,7 +96,7 @@ Winlines.prototype.demoLines = function(){
  * TODO Show win amount.
  * Sets up for a sequence and uses showNext to display results in order.
  */
-Winlines.prototype.show = function(winData){
+WinlinesView.prototype.show = function(winData){
     this.winData = winData;
     this.winShown = 0;
     this.showNext();
@@ -105,7 +106,7 @@ Winlines.prototype.show = function(winData){
  * Show line summary 
  * winData: Object containing array of all line IDs to show
  */
-Winlines.prototype.showLineSummary = function(winData){
+WinlinesView.prototype.showLineSummary = function(winData){
     this.winData = winData;
     this.demoMode = false;
     this.winShown = 0;
@@ -113,9 +114,9 @@ Winlines.prototype.showLineSummary = function(winData){
 }
 
 /**
- * WinSummary: call with an array of winlines to display all together. 
+ * WinSummary: call with an array of winlines to display all together.
  */
-Winlines.prototype._showLines = function(lineIds){
+WinlinesView.prototype._showLines = function(lineIds){
     var gfx = new PIXI.Graphics();
     var dropShadowOffset = new Point(2,2);
     
@@ -149,7 +150,7 @@ Winlines.prototype._showLines = function(lineIds){
 /**
  * 
  */
-Winlines.prototype.onSummaryComplete = function(){
+WinlinesView.prototype.onSummaryComplete = function(){
     this.removeChildren();
         this.timeout = setTimeout(function(){
             Events.Dispatcher.dispatchEvent(new Event(Event.WIN_SUMMARY_COMPLETE));
@@ -160,7 +161,7 @@ Winlines.prototype.onSummaryComplete = function(){
  * Win Summary display mode:
  * Draws a complete winline across the reels extending beyond the reels frame on both sides. 
  */
-Winlines.prototype.drawLine = function(gfx, lineId, dropShadowOffset){
+WinlinesView.prototype.drawLine = function(gfx, lineId, dropShadowOffset){
 
     var xoff = dropShadowOffset == null ? 0 : dropShadowOffset.x;
     var yoff = dropShadowOffset == null ? 0 : dropShadowOffset.y;
@@ -187,7 +188,7 @@ Winlines.prototype.drawLine = function(gfx, lineId, dropShadowOffset){
 /**
  * Show the next in the win sequence: when being managed by THIS  
 
-Winlines.prototype.showNext = function(){
+WinlinesView.prototype.showNext = function(){
     
     this.removeChildren();
     
@@ -203,7 +204,7 @@ Winlines.prototype.showNext = function(){
 /**
  * Show the next in the win sequence: when being managed by WinAnimator
  */
-Winlines.prototype.showNextWin = function(line, numSymbols){
+WinlinesView.prototype.showNextWin = function(line, numSymbols){
     
     this.removeChildren();
     this.showWin(line, numSymbols);
@@ -212,7 +213,7 @@ Winlines.prototype.showNextWin = function(line, numSymbols){
 /**
  * Draws a set of bounding boxes around the relevant win sybmols, with linking lines.
  */
-Winlines.prototype.showWin = function(lineId, symbolsInWin){
+WinlinesView.prototype.showWin = function(lineId, symbolsInWin){
     
     // Get fresh data in case of resizing
     this.symbolData = Reelset.symbolData;
@@ -230,7 +231,7 @@ Winlines.prototype.showWin = function(lineId, symbolsInWin){
 
     // 
     for(var s=0; s<symbolsInWin; ++s){
-        // console.log("ShowWinBox on symbol, line " + lineId + " " + GameConfig.getInstance().winlines[lineId][s]);  
+        // console.log("ShowWinBox on symbol, line " + lineId + " " + GameConfig.getInstance().winlines[lineId][s]);
         var reel = s;
         var symbol = GameConfig.getInstance().winlines[lineId][s];
         this.drawBoundingBox(gfx, reel, symbol, dropShadowOffset);
@@ -244,7 +245,7 @@ Winlines.prototype.showWin = function(lineId, symbolsInWin){
     gfx.blendMode = PIXI.BLEND_MODES.NORMAL;
     
     for(var s=0; s<symbolsInWin; ++s){
-        // console.log("ShowWinBox on symbol, line " + lineId + " " + GameConfig.getInstance().winlines[lineId][s]);  
+        // console.log("ShowWinBox on symbol, line " + lineId + " " + GameConfig.getInstance().winlines[lineId][s]);
         var reel = s;
         var symbol = GameConfig.getInstance().winlines[lineId][s];
         this.drawBoundingBox(gfx, reel, symbol);
@@ -255,21 +256,12 @@ Winlines.prototype.showWin = function(lineId, symbolsInWin){
     }
 
     this.addChild(gfx);
-/*
-    
-    var that = this;
-    this.timeout = setTimeout(function(){
-        that.removeChildren();
-        that.timeout = setTimeout(that.showNext,500);
-    },1500);
-*/
-
 }
 
 /**
- * draws the little bits of winlines that link the symbols to each other. 
+ * draws the little bits of winlines that link the symbols to each other.
  */
-Winlines.prototype.drawLink = function(gfx,reel,symbol,nextSymbol,dropShadowOffset){
+WinlinesView.prototype.drawLink = function(gfx,reel,symbol,nextSymbol,dropShadowOffset){
     
     var xoff = dropShadowOffset == null ? 0 : dropShadowOffset.x;
     var yoff = dropShadowOffset == null ? 0 : dropShadowOffset.y;
@@ -308,7 +300,7 @@ Winlines.prototype.drawLink = function(gfx,reel,symbol,nextSymbol,dropShadowOffs
 /**
  * draws a single bounding box
  */
-Winlines.prototype.drawBoundingBox = function(gfx, reel, symbol, dropShadowOffset){
+WinlinesView.prototype.drawBoundingBox = function(gfx, reel, symbol, dropShadowOffset){
     // console.log("Draw bounding box " + reel + "," + symbol);
     
     var xoff = dropShadowOffset == null ? 0 : dropShadowOffset.x;

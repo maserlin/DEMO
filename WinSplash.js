@@ -1,8 +1,5 @@
 /**
- * I am confused as to why this object can't position itself using either
- * its own width & height or that of its background png, both of which report "1"
- * and the whole thing draws all over the place.
- * Obviously to do with containers inside containers in some way. :-(
+ * Simple splash dialog to show total amount won on the reels etc
  */
 function WinSplash(position)
 {

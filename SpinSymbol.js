@@ -1,5 +1,8 @@
 /**
- * TODO Anchor all symbol at their CENTER to the reel 
+ * Base class for Animated Symbols:
+ * Manages a sprite sheet and can show any given symbol either at rest
+ * of the blurred version while spinning.
+ * @param id : which symbol to show
  */
 function SpinSymbol(id){
     this.blur = false;
@@ -38,48 +41,37 @@ SpinSymbol.prototype.blur = false;
 SpinSymbol.prototype.isRoyal = true;
 SpinSymbol.prototype.bp = null;
 
-
+/**
+ * Override this to animate symbol or add some implementation here using filters etc
+ * Add sprites etc to container then remove them in order to see them on screen.
+ */
 SpinSymbol.prototype.animate = function(container){
     // --
 }
 
+/**
+ * Test method
+ */
 SpinSymbol.prototype.revolve = function(){
     this.rotation += 0.01;
 }
 
 /**
- * COULD use ".texture = nnn" and not use movie clip 
- * @param {Object} id
- * @param {Object} blur
+ * @param {Object} id: which symbol to show
+ * @param {Object} blur : whether to blur (while spinning)
+ * There is a blur method you can apply to sprites but they look rubbish.
+ * Better to use an alternative image.
  */
 SpinSymbol.prototype.setId = function(id, blur){
     blur = blur || false;
     
     if(this.id != id || this.blur != blur)
     {
-
-        // Previously was a bonus symbol but we're changing it
-/*
-        if(this.id == WinCalculator.BONUS){
-            globalTicker.remove(this.revolve);
-            this.rotation = 0;    
-            this.anchor = new Point(0,0);
-        }
-*/
         this.blur = blur;
         this.id = id;
         if(this.blur)this.gotoAndStop(this.id+this.blurOffset);
         else this.gotoAndStop(this.id);
         this.isRoyal = this.id > 4 ? false : true;
-        
-
-        // Changed to a bonus symbol
-/*
-        if(this.id == WinCalculator.BONUS){
-            this.anchor = new Point(0.5,0.5);
-            globalTicker.add(this.revolve);    
-        }
-*/
     }
 }
 

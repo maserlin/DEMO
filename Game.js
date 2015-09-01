@@ -25,16 +25,10 @@ function Game(){
     this.gameBackground = null;
 
     /*
-     * winCalculator builds a results object given reel positions etc;
-     * Required on some platforms, not on others.
-     */
-    this.winCalculator = new WinCalculator();
-
-    /*
      * Receives results in a variety of formats (xml, json, name=value pairs)
      * and parses into one format appropriate for all games (usually JSON)
      */
-    this.dataParser = new DataParser(this.winCalculator);
+    this.dataParser = new DataParser();
 
     /*
      * Sends requests to a server and fields the result. Uses dataParser to determine
@@ -101,7 +95,7 @@ Game.prototype.onAssetsLoaded = function(obj){
     this.layers[Game.BACKGROUND].addChild(this.gameBackground);
 
     // manages all reels game components
-    this.reelsScreen = new ReelsScreen(GameConfig.getInstance().reels[0], this.winCalculator);
+    this.reelsScreen = new ReelsScreen(GameConfig.getInstance().reels[0], this.dataParser);
 
     // Right now we want to show the ReelsScreen
     this.loadScreen = this.loadScreen.bind(this);
@@ -170,7 +164,7 @@ Game.prototype.onBonusComplete = function(){
 Game.prototype.onReelsOut = function(){
     console.log("onReelsOut for Bonus");
     this.layers[Game.MAIN].removeChild(this.reelsScreen);    
-    this.bonusScreen = new BonusScreen(this.winCalculator);
+    this.bonusScreen = new BonusScreen(this.dataParser.getBonusWins());
     this.loadScreen(this.bonusScreen);    
 
     this.fadeScreen = this.bonusScreen;
