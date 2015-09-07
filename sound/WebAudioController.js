@@ -54,11 +54,7 @@ www.noteflight.com
 
  * 
  */
-com.sound.WebAudioController = (function(_super){
-    
-    var DisplayEvent = com.display.events.DisplayEvent;
-    var GameEvent = com.game.fullmoonfortunes.GameEvent;    
-    
+
     /**
      * @param audioContext : a new AudioContext object.
      * The AudioContext interface represents an audio-processing graph built from audio modules 
@@ -85,11 +81,8 @@ com.sound.WebAudioController = (function(_super){
      * @see http://docs.webplatform.org/wiki/apis/webaudio/AudioContext/decodeAudioData
      * 
      */
-    function WebAudioController(stage, eventManager,
-                                audioContext, audioJson, audioBufferList)
+    function WebAudioController(audioContext, audioJson, audioBufferList)
     {
-        this._gameStage = stage;
-        this._eventManager = eventManager;
         this._audioContext = audioContext;
         this._audioJson = audioJson.sounds;
         this._audioBufferList = audioBufferList;
@@ -116,13 +109,23 @@ com.sound.WebAudioController = (function(_super){
         this.source = [];
         this._gainNode = [];
         this._createdFadeLoop = [];
-        
+
+
+        this.stopAll = this.stopAll.bind(this);
+        this.resume = this.resume.bind(this);
+        this._stopSound = this._stopSound.bind(this);
+        this._fadeOut = this._fadeOut.bind(this);
+        this.stop = this.resume.bind(this);
+        this.isPlaying = this.isPlaying.bind(this);
+        this.playOver = this.playOver.bind(this);
+        this.playNow = this.playNow.bind(this);
+        this.play = this.play.bind(this);
+        this._okToPlay = this._okToPlay.bind(this);
+        this.onFocus = this.onFocus.bind(this);
+
+
         trace("WebAudioController created")
     }
-    var WebAudioController = newClass(WebAudioController, _super);    
-    
-    WebAudioController.prototype._gameStage = null;
-    WebAudioController.prototype._eventManager = null;
     WebAudioController.prototype._audioContext = null;
     WebAudioController.prototype._audioJson = null;
     WebAudioController.prototype._audioBufferList = null;
@@ -161,7 +164,7 @@ com.sound.WebAudioController = (function(_super){
         if(this._muted || this._audioBufferList[soundId] == null)
         {
             okToPlay = false;
-            this._eventManager.dispatchEvent(new GameEvent(GameEvent.SOUND_COMPLETE));
+            Events.Dispatcher.dispatchEvent(new Event(Event.SOUND_COMPLETE));
         }
         
         return okToPlay;
@@ -194,7 +197,7 @@ com.sound.WebAudioController = (function(_super){
          */
         if(this.isPlaying(soundId) && this.source[soundId].buffer.fade)
         {
-            this._gameStage.removeEventListener(DisplayEvent.TICK_EVENT, this._fadeOut);    
+            globalTicker.remove(this._fadeOut);
             this._stopSound(soundId);
             this._gainNode[soundId] = null;
         }
@@ -307,7 +310,7 @@ com.sound.WebAudioController = (function(_super){
                         clearInterval(this.objFocusTimer);
                         this.objFocusTimer = null;
                         this.stop(buffer.id);
-                        this._eventManager.dispatchEvent(new GameEvent(GameEvent.SOUND_COMPLETE));
+                        Events.Dispatcher.dispatchEvent(new GameEvent(GameEvent.SOUND_COMPLETE));
                     }
                     else
                     {
@@ -321,20 +324,20 @@ com.sound.WebAudioController = (function(_super){
                         if(this.source[buffer.id].buffer.volume == 1 && !this._createdFadeLoop[buffer.id])
                         {
                             this.source[buffer.id] = null;
-                            this._eventManager.dispatchEvent(new GameEvent(GameEvent.SOUND_COMPLETE));
+                            Events.Dispatcher.dispatchEvent(new GameEvent(GameEvent.SOUND_COMPLETE));
                             this.play(buffer.id);
                         }
                         else
                         {
                             this._createdFadeLoop[buffer.id] = false;
-                            this._eventManager.dispatchEvent(new GameEvent(GameEvent.SOUND_COMPLETE));
+                            Events.Dispatcher.dispatchEvent(new GameEvent(GameEvent.SOUND_COMPLETE));
                         }
                     }
                 }
                 else
                 {
                     this.source[buffer.id] = null;
-                    this._eventManager.dispatchEvent(new GameEvent(GameEvent.SOUND_COMPLETE));
+                    Events.Dispatcher.dispatchEvent(new GameEvent(GameEvent.SOUND_COMPLETE));
                 }
             }
             else
@@ -344,7 +347,7 @@ com.sound.WebAudioController = (function(_super){
                 {
                     this.source[all] = null;
                 }
-                this._eventManager.dispatchEvent(new GameEvent(GameEvent.SOUND_COMPLETE));
+                Events.Dispatcher.dispatchEvent(new GameEvent(GameEvent.SOUND_COMPLETE));
             }
         }
         catch(e)
@@ -426,7 +429,7 @@ com.sound.WebAudioController = (function(_super){
             if(this.source[soundId] && this.source[soundId].buffer.fade)
             {
                 this._fadingSoundId = soundId;
-                this._gameStage.addEventListener(DisplayEvent.TICK_EVENT, this._fadeOut);   
+                globalTicker.add(this._fadeOut);
             }
             else
             {
@@ -457,7 +460,7 @@ com.sound.WebAudioController = (function(_super){
                 if(this._gainNode[this._fadingSoundId].gain.value <= 0)
                 {
                     // once the volume is at 0 we remove the tick event, and stop the sound that was being faded.
-                    this._gameStage.removeEventListener(DisplayEvent.TICK_EVENT, this._fadeOut);    
+                    globalTicker.remove(this._fadeOut);
                     this._stopSound(this._fadingSoundId);
                     this._gainNode[this._fadingSoundId] = null;
                 }
@@ -466,7 +469,7 @@ com.sound.WebAudioController = (function(_super){
         else
         {
             // if for some reason the gainNode is missing, we just kill the sound and the fade.
-            this._gameStage.removeEventListener(DisplayEvent.TICK_EVENT, this._fadeOut);    
+            globalTicker.remove(this._fadeOut);
             this._stopSound(this._fadingSoundId);
             this._gainNode[this._fadingSoundId] = null;
         }
@@ -539,6 +542,3 @@ com.sound.WebAudioController = (function(_super){
     {
         this._muted = false;
     }
-
-    return WebAudioController;
-})(com.sound.Controller);

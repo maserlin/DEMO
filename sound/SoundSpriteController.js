@@ -1,17 +1,9 @@
-com.sound.SoundSpriteController = (function(_super){
-    
-    var GameEvent = com.game.fullmoonfortunes.GameEvent;
-    var DisplayEvent = com.display.events.DisplayEvent;
-    
     /**
      * @param {Object} objAudio : an audio element attached to the html.body
      * @param {Object} objAudioJson : control data fro the sound spritesheet
      */
-    function SoundSpriteController(stage, eventManager, objAudio, objAudioJson)
+    function SoundSpriteController(objAudio, objAudioJson)
     {
-        this._gameStage = stage;
-        this._eventManager = eventManager;
-        
         this._queue = [];
         this._state = SoundSpriteController.PAUSED;
 
@@ -20,11 +12,25 @@ com.sound.SoundSpriteController = (function(_super){
         this.objAudioJson = objAudioJson;
 
         this.objFocusTimer = setInterval(this.onFocus, 50);
-        
+
+
+        this.onFocus = this.onFocus.bind(this);
+        this._okToPlay = this._okToPlay.bind(this);
+        this.play = this.play.bind(this);
+        this.playOver = this.playOver.bind(this);
+        this.playNow = this.playNow.bind(this);
+        this._processQueue = this._processQueue.bind(this);
+        this._onSeeking = this._onSeeking.bind(this);
+        this.isPlaying = this.isPlaying.bind(this);
+        this._onPlaying = this._onPlaying.bind(this);
+        this.stop = this.stop.bind(this);
+        this.stopAll = this.stopAll.bind(this);
+        this.resume = this.resume.bind(this);
+        this._clearQueue = this._clearQueue.bind(this);
+
+
         trace("SoundSpriteController created")
     }
-    var SoundSpriteController = newClass(SoundSpriteController, _super);
-    
     /*
      * These check focus in an interval by getting Date.now.
      * It stops being run if the browser is minimised, and 
@@ -39,9 +45,6 @@ com.sound.SoundSpriteController = (function(_super){
     SoundSpriteController.prototype.objFocusTimer = null;
     SoundSpriteController.prototype.focusLastSeen = 0;
     
-    SoundSpriteController.prototype._gameStage = null;
-    SoundSpriteController.prototype._eventManager = null;
-
     SoundSpriteController.prototype._state = null;
     SoundSpriteController.PLAYING = "playing";
     SoundSpriteController.SEEKING = "seeking";
@@ -82,7 +85,7 @@ com.sound.SoundSpriteController = (function(_super){
         if(this._muted || this.objAudioJson.sounds[soundId] == null)
         {
             okToPlay = false;
-            this._eventManager.dispatchEvent(new GameEvent(GameEvent.SOUND_COMPLETE));
+            Events.Dispatcher.dispatchEvent(new GameEvent(GameEvent.SOUND_COMPLETE));
         }
         
         return okToPlay;
@@ -164,7 +167,7 @@ com.sound.SoundSpriteController = (function(_super){
             //trace("Seek sound id " + obj.soundId + " " + this.objAudioJson.sounds[obj.soundId].name)
             obj = null;
 
-            this._gameStage.addEventListener(DisplayEvent.TICK_EVENT, this._onSeeking);
+            globalTicker.add(this._onSeeking);
             this.objAudio.currentTime = String(this._startTime);
         }
     }
@@ -195,13 +198,13 @@ com.sound.SoundSpriteController = (function(_super){
         //trace("this.objAudio.currentTime " + this.objAudio.currentTime + " : " + this._startTime)
         if( Math.floor(Number(this.objAudio.currentTime)) == Math.floor(this._startTime) )
         {
-            this._gameStage.removeEventListener(DisplayEvent.TICK_EVENT, this._onSeeking);
+            globalTicker.remove(this._onSeeking);
             
             this.objAudio.currentTime = String(this._startTime);
             this._state = SoundSpriteController.PLAYING;   
             
             this.objAudio.play();
-            this._eventManager.dispatchEvent(new GameEvent(GameEvent.SOUND_START));
+            Events.Dispatcher.dispatchEvent(new GameEvent(GameEvent.SOUND_START));
         }
     }
 
@@ -252,7 +255,7 @@ com.sound.SoundSpriteController = (function(_super){
             if( this._loop )
             {
                 // Each time sound completes            
-                this._eventManager.dispatchEvent(new GameEvent(GameEvent.SOUND_COMPLETE));
+                Events.Dispatcher.dispatchEvent(new GameEvent(GameEvent.SOUND_COMPLETE));
                 
                 /*
                  * Check elapsed time before looping. If it's been too long
@@ -266,7 +269,7 @@ com.sound.SoundSpriteController = (function(_super){
                         // Go round again
                         this.objAudio.currentTime = String(this._startTime);
                         this._state = SoundSpriteController.SEEKING;   
-                        this._gameStage.addEventListener(DisplayEvent.TICK_EVENT, this._onSeeking);
+                        globalTicker.add(this._onSeeking);
                     }
                     else
                     {
@@ -319,7 +322,7 @@ com.sound.SoundSpriteController = (function(_super){
             {
                 this.objAudio.pause();
                 this._state = SoundSpriteController.PAUSED;
-                this._eventManager.dispatchEvent(new GameEvent(GameEvent.SOUND_COMPLETE));
+                Events.Dispatcher.dispatchEvent(new GameEvent(GameEvent.SOUND_COMPLETE));
             }
             // Not playing: remove from queue if found.
             else
@@ -340,7 +343,7 @@ com.sound.SoundSpriteController = (function(_super){
         {
             this.objAudio.pause();
             this._state = SoundSpriteController.PAUSED;
-            this._eventManager.dispatchEvent(new GameEvent(GameEvent.SOUND_COMPLETE));
+            Events.Dispatcher.dispatchEvent(new GameEvent(GameEvent.SOUND_COMPLETE));
         }
     }
     
@@ -373,6 +376,3 @@ com.sound.SoundSpriteController = (function(_super){
             obj = null;
         }
     }
-    
-    return SoundSpriteController;
-})(com.sound.Controller);

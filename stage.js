@@ -90,7 +90,10 @@ function onAssetsLoaded(){
     
     game = new Game();
     game.onAssetsLoaded();
-    
+
+    // Aynchronous sound support
+    gameLoader.loadSounds();
+
     gameWidth = game.gameBackground.getBounds().width;
     gameHeight = game.gameBackground.getBounds().height;
     

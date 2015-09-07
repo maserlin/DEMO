@@ -19,6 +19,7 @@ Configuration.prototype.profileXmlDoc = null;
 Configuration.prototype.serverUrl = null;
 Configuration.prototype.winlines = null;
 Configuration.prototype.winlineColours = null;
+Configuration.prototype.symbolsInView = 3;
 Configuration.prototype.reels = null;
 Configuration.prototype.stakes = null;
 Configuration.prototype.startTiming = [0,200,400,600,800];

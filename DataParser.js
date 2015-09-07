@@ -29,6 +29,9 @@
         this.cleanObject = this.cleanObject.bind(this);
         this.parseResponse = this.parseResponse.bind(this);
     }
+    // Parses XML string or dom doc to Json
+    DataParser.prototype.x2js = null;
+    // Used to create results JSON from new reel positions and reelsetId
     DataParser.prototype.winCalculator = null;
     // Storage for SPIN requests: Use in case of ERROR to contruct safe return data
     DataParser.prototype.spinRequestJson = Object.create(null);
@@ -36,8 +39,51 @@
     DataParser.prototype.serverResponseJson = Object.create(null);
     // Returned to game as the results object (config, spin, etc)
     DataParser.prototype.resultsJson = Object.create(null);
-    // Parses XML string or dom doc to Json
-    DataParser.prototype.x2js = null; 
+
+/**
+ *
+ */
+DataParser.prototype.buildInitRequest = function()
+{
+    var objConfiguration = Object.create(null);
+    objConfiguration.strGameTitle ="AG-FullMoonFortunes";
+
+    return '<InitRequest gameTitle="' + objConfiguration.strGameTitle + '" />';
+};
+
+/**
+ *
+ * @param {Object} jsonData
+ *
+ * <CompositeRequest>
+    <PlaceBetRequest gameTitle="AG-FullMoonFortunes">
+    <Bet stake="2.00" winlines="20"/>
+    </PlaceBetRequest />
+    </CompositeRequest>
+ */
+DataParser.prototype.buildSpinRequest = function (jsonData)
+{
+    // Used to construct an error response ONLY.
+    this.spinRequestJson = jsonData;
+
+    // Init output.
+    var strSpinRequest="";
+
+    var title = "PIXI_TEST_GAME";//GameConfiguration.getInstance().strGameTitle;
+
+    // Bet Request. Check input is in fact a bet request.
+    if( jsonData.code == "BET")//GameEvent.BetRequest )
+    {
+        strSpinRequest = '<PlaceBetRequest gameTitle=\"' + title + '">';
+        strSpinRequest += '<' + jsonData.code + ' stake="' + (jsonData.stake/100).toFixed(2) +
+                          '" winlines="' + jsonData.winlines +
+                          '" foitems="' + jsonData.foitems;
+        strSpinRequest += '" />';
+    }
+
+    //
+    return strSpinRequest;
+};
 
 /**
  * Check for a valid response ie no error codes etc
@@ -202,15 +248,13 @@ DataParser.prototype.parseResponse = function( code, responseXml )
         this.cleanObject(this.serverResponseJson);
         this.serverResponseJson = this.x2js.xml2json(xmlDoc);
         
-        //GameConfiguration.getInstance().storeCurrencyDetails(this.serverResponseJson.PlaceBetResponse.Balances.Balance[0]);
-
         /*
          * Work with just the Spin results. Include latest balance. If there's no wins the main screen
          * will update balance to latest; this will include any new funds added as a result of low balance
          * message to player. 
          */
         this.objResultsJson = this.serverResponseJson.PlaceBetResponse.Outcome.Spin;
-        this.objResultsJson._flBalance = this.serverResponseJson.PlaceBetResponse.Balances.Balance[0]._amount;
+        this.objResultsJson.flBalance = this.serverResponseJson.PlaceBetResponse.Balances.Balance[0]._amount;
         
         // If freespins, store like this.
         if(this.serverResponseJson.PlaceBetResponse.Outcome.Freespin)
@@ -260,7 +304,7 @@ DataParser.prototype.parseResponse = function( code, responseXml )
      *
      * A truly dumb client decodes the response or uses it directly to drive the game interface,
      * but some server only send the reel positions through, leaving the results calculation to the client.
-     * this also exposes soem of the underlying maths to the Player should they care to look :-(
+     * this also exposes some of the underlying maths to the Player should they care to look :-(
      */
     DataParser.prototype._createResultsResponse = function ()
     {
@@ -291,241 +335,19 @@ DataParser.prototype.parseResponse = function( code, responseXml )
     }
 
 /**
- * unused (old) method that turns the incoming XML (parsed into JSON) into a game-friendly
- * JSON format good for any game.
- * This DEMO uses the above winCalculator to achieve the same kind of thing in a lighter way.
- */
-    DataParser.prototype.unused = function(){
-        var i = 0;
-
-        /*
-         * this.resultsJson should be already new-ed
-         * and the request code attached as code:Bet
-         */
-        this.resultsJson.Spin = Object.create(null);
-        this.resultsJson.Spin.stake = parseFloat(this.objResultsJson._stake);
-        this.resultsJson.Spin.lineStake = this.resultsJson.Spin.stake/20;
-        this.resultsJson.Spin.spinWin = parseFloat(this.objResultsJson._spinWin);
-        this.resultsJson.Spin.maxWin = this.objResultsJson._maxWin == "false" ? false : true;
-        this.resultsJson.Spin.layout = parseInt(this.objResultsJson._layout, 10);
-        this.resultsJson.Spin.balance = Number(this.objResultsJson._flBalance);
-
-        // Ensure ints for new stop positions
-        this.resultsJson.Spin.stops = this.objResultsJson._position.split(",");
-        for( i in this.resultsJson.Spin.stops ){
-            this.resultsJson.Spin.stops[i] = parseInt(this.resultsJson.Spin.stops[i], 10);
-        }
-
-        // Ensure ints for array of final symbols-in-view.
-        this.resultsJson.Spin.arrSymbols = this.objResultsJson._symbols.split(",");
-        for( i in this.resultsJson.Spin.arrSymbols ){
-            this.resultsJson.Spin.arrSymbols[i] = parseInt(this.resultsJson.Spin.arrSymbols[i], 10);
-        }
-
-        // Record any winlines
-        this.resultsJson.Spin.arrWinlines = [];
-
-        //
-        if(this.objResultsJson.Winlines.__cnt > 0){
-            for(var wl=0; wl<this.objResultsJson.Winlines.Winline_asArray.length; ++wl){
-                var line = this.objResultsJson.Winlines.Winline_asArray[wl];
-                this.resultsJson.Spin.arrWinlines.push(new WinlineResult(line));
-            }
-        }
-
-        // Moon bonus
-        if(this.objResultsJson.Bonus){
-            this.resultsJson.Spin.Bonus = Object.create(null);
-            this.resultsJson.Spin.Bonus.id = parseInt(this.objResultsJson.Bonus._id,10);
-            this.resultsJson.Spin.Bonus.indices = this.objResultsJson.Bonus._indices.split(",");
-            this.resultsJson.Spin.Bonus.multiplier = parseInt(this.objResultsJson.Bonus._multiplier,10);
-            this.resultsJson.Spin.Bonus.position = parseInt(this.objResultsJson.Bonus._position,10);
-            this.resultsJson.Spin.Bonus.win = parseFloat(this.objResultsJson.Bonus._win);
-        }
-
-        // -- Freespins
-        if(this.objResultsJson.Freespins != null){
-            /*
-             * Top level data telling us how many spins we got and where the scatters are on the reels.
-             * NOTE: This is agglomerated into a single result if the firat freespin hits maxWin!
-             */
-            this.resultsJson.Freespins = Object.create(null);
-            this.resultsJson.Freespins.arrValue = this.objResultsJson.Freespins._value.split(",");
-            this.resultsJson.Freespins.intIndex = parseInt(this.objResultsJson.Freespins._index, 10);
-            this.resultsJson.Freespins.intAward = parseInt(this.objResultsJson.Freespins._award, 10);
-            this.resultsJson.Freespins.intMultiplier = parseInt(this.objResultsJson.Freespins._multiplier, 10);
-
-            // Create array of freespin results
-            this.resultsJson.Freespins.arrFreespin = [];
-
-            /*
-             * Check that we have an ARRAY of freespins. If not then there's only one
-             * due to maxWin being hit on the first freespin.
-             * NOTE: Check the PlaceBetResponse.Outcome.JSON not the Spin.Freespins.Freespin object!
-             */
-            if(this.serverResponseJson.PlaceBetResponse.Outcome.Freespin instanceof Array){
-
-                for(var s in this.objResultsJson.Freespins.Freespin){
-                    var spin = this.objResultsJson.Freespins.Freespin[s];
-                    var freespin = Object.create(null);
-                    freespin.intAward = parseInt(spin._award, 10);
-                    freespin.intIndex = parseInt(spin._index, 10);
-                    freeSpin.spinWin = parseFloat(spin._spinWin);
-                    freespin.flFreespinsWin = parseFloat(spin._freespinsWin);
-                    freeSpin.maxWin = spin._maxWin == "false" ? false : true;
-                    freeSpin.layout = parseInt(spin._layout, 10);
-
-                    //
-                    freeSpin.stops = spin._position.split(",");
-                    for( i in freeSpin.stops){
-                        freeSpin.stops[i] = parseInt(freeSpin.stops[i], 10);
-                    }
-
-                    //
-                    freespin.arrSymbols = spin._symbols.split(",");
-                    for( i in freespin.arrSymbols){
-                        freespin.arrSymbols[i] = parseInt(freespin.arrSymbols[i], 10);
-                    }
-
-                    freespin.arrWinlines = [];
-
-                    var wls = spin.Winlines_asArray;
-                    if(wls[0].Winline){
-                        for(wl=0; wl<wls[0].Winline_asArray.length; ++wl){
-                            var line = wls[0].Winline_asArray[wl];
-                            freespin.arrWinlines.push(new WinlineResult(line));
-                        }
-                    }
-
-                    //
-                    this.resultsJson.Freespins.arrFreespin.push(freespin);
-                }
-            }
-            /*
-             * Only one freespin result due to maxWin hit on first freespin.
-             * We need to check that the array position magic numbers here are
-             * the right ones to use.
-             * [13,       // [0] no idea
-                Object,   // [1] winlines
-                Array[1], // [2] winlines as array
-                "7",      // [3] award (spins total)
-                "7.50",   // [4] freespinsWin
-                "7",      // [5] index (this spin)
-                "1,6,13", // [6] Scatter positions
-                "14",     // [7] layout
-                "true",   // [8] maxWin
-                "4",      // [9] multiplier
-                "36,18,16,11,28", // [10] stop positions
-                "7.50",   // [11] spinWin (this spin)
-                "2.00",   // [12] stake
-                "3,12,6,6,1,0,12,2,0,0,1,4,1,12,2", // [13] symbols
-                "10.00"] // [14] totalWin spins + freespins
-             */
-            else{
-                var spin = this.objResultsJson.Freespins.Freespin;
-                var freespin = Object.create(null);
-
-                freespin.intAward = parseInt(spin[3], 10);
-                freespin.intIndex = parseInt(spin[5], 10);
-                freeSpin.spinWin = parseFloat(spin[11]);
-                freespin.flFreespinsWin = parseFloat(spin[4]);
-                freeSpin.layout = parseInt(spin[7], 10);
-
-                freeSpin.maxWin = spin[8] == "false" ? false : true;
-
-
-                //
-                freeSpin.stops = spin[10].split(",");
-                for( i in freeSpin.stops){
-                    freeSpin.stops[i] = parseInt(freeSpin.stops[i], 10);
-                }
-
-                //
-                freespin.arrSymbols = spin[13].split(",");
-                for( i in freespin.arrSymbols){
-                    freespin.arrSymbols[i] = parseInt(freespin.arrSymbols[i], 10);
-                }
-
-                freespin.arrWinlines = [];
-
-                var wls = spin[2];
-                if(wls[0].Winline){
-                    for(wl=0; wl<wls[0].Winline_asArray.length; ++wl){
-                        var line = wls[0].Winline_asArray[wl];
-                        freespin.arrWinlines.push(new WinlineResult(line));
-                    }
-                }
-
-                //
-                this.resultsJson.Freespins.arrFreespin.push(freespin);
-            }
-        }
-    };
-    
-    
-    /**
-     * 
-     */
-    DataParser.prototype.buildInitRequest = function()
-    {
-        var objConfiguration = Object.create(null);
-        objConfiguration.strGameTitle ="AG-FullMoonFortunes";
-
-        return '<InitRequest gameTitle="' + objConfiguration.strGameTitle + '" />';
-    };
-    
-/**
- *
- * @param {Object} jsonData
- *
- * <CompositeRequest>
-    <PlaceBetRequest gameTitle="AG-FullMoonFortunes">
-    <Bet stake="2.00" winlines="20"/>
-    </PlaceBetRequest />
-    </CompositeRequest>
- */
-DataParser.prototype.buildSpinRequest = function (jsonData)
-{
-    // Used to construct an error response ONLY.
-    this.spinRequestJson = jsonData;
-
-    // Init output.
-    var strSpinRequest="";
-
-    var title = "PIXI_TEST_GAME";//GameConfiguration.getInstance().strGameTitle;
-
-    // Bet Request. Check input is in fact a bet request.
-    if( jsonData.code == "BET")//GameEvent.BetRequest )
-    {
-        strSpinRequest = '<PlaceBetRequest gameTitle=\"' + title + '">';
-        strSpinRequest += '<' + jsonData.code + ' stake="' + (jsonData.stake/100).toFixed(2) +
-                          '" winlines="' + jsonData.winlines +
-                          '" foitems="' + jsonData.foitems;
-        strSpinRequest += '" />';
-    }
-
-    //
-    return strSpinRequest;
-};
-
-/**
- * Bad server response: fake a result for play-for-free
+ * BAD SERVER RESPONSE: FAKE A RESULT FOR PLAY-FOR-FREE
  * TODO make a safe result to stop the reels not showing wins
  * There are many ways of doing this:
  * We could fake up the serverResponseJson and parse as if it were real.
  * We can construct resultsJson directly as we are doing here: we need to maintain a fake balance though.
  *
  * Note the only part we are really using at present are the reelset (layout) and stop positions (stops):
- * the game uses WinCalculator to work everything out from that. This is probably the wrong approach.
+ * the game uses WinCalculator to work everything out from that. This is probably the wrong approach
+ * since it exposes some game maths : often the Server returns a totally complete set of results with instructions
+ * to the client on how to display them, but this is specific to every platform/engine combination.
  */
 DataParser.prototype.createErrorResult = function(){
     this.resultsJson.Spin = Object.create(null);
-    this.resultsJson.Spin.stake = this.spinRequestJson.stake;
-    this.resultsJson.Spin.lineStake = this.spinRequestJson.stake/20;
-//    this.resultsJson.Spin.spinWin = parseFloat(this.objResultsJson._spinWin);
-//    this.resultsJson.Spin.maxWin = this.objResultsJson._maxWin == "false" ? false : true;
-//    this.resultsJson.Spin.layout = parseInt(this.objResultsJson._layout, 10);
-//    this.resultsJson.Spin.balance = Number(this.objResultsJson._flBalance);
 
     if(this.spinRequestJson.foitems != null){
         this.resultsJson.Spin.layout = this.spinRequestJson.foitems.shift();
@@ -534,6 +356,7 @@ DataParser.prototype.createErrorResult = function(){
     else{
         this.resultsJson.Spin.stops = [];
 
+        // Create bonus result based on RNG
         if(Math.floor(Math.random() * GameConfig.getInstance().bonusChance) == 0){
             this.resultsJson.Spin.layout = 1;
 
@@ -559,6 +382,46 @@ DataParser.prototype.createErrorResult = function(){
             }
         }
     }
+
+    // -- Got stops and layout: get symbols in view
+
+    var reelMap = [];
+
+    // Ensure ints for array of final symbols-in-view.
+    var arrSymbols = this.getSymbolsInView();
+
+    for( var s = 0; s < arrSymbols.length; s += 3 ){
+        reelMap.push( arrSymbols.slice( s, 3 + s ) );
+    }
+
+    this.winData = this.winCalculator.calculate( reelMap );
+}
+
+/**
+ * Get a linear list of all the symbols the player can see.
+ * @returns {Array}
+ */
+DataParser.prototype.getSymbolsInView = function(){
+    var symbolsInView = [];
+    var reels = GameConfig.getInstance().reels[this.resultsJson.Spin.layout];
+    var stops = this.resultsJson.Spin.stops;
+    for(var r=0; r<reels.length; ++r){
+        for(var s=0; s<GameConfig.getInstance().symbolsInView; ++s ){
+            var index = this.getWrappedIndex(reels[r], stops[r] + (s-1));
+            symbolsInView.push(reels[r][index]);
+        }
+    }
+    return symbolsInView;
+}
+
+/**
+ * Ensure new index position is +tive and wrapped to length of reel
+ * @param reel
+ * @param index
+ * @returns {number}
+ */
+DataParser.prototype.getWrappedIndex = function(reel, index){
+    return (reel.length + index) % reel.length;
 }
 
 /**

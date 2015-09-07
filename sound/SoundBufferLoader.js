@@ -12,8 +12,6 @@
  * @see http://docs.webplatform.org/wiki/apis/webaudio/AudioContext/decodeAudioData
  * 
  */
-com.sound.SoundBufferLoader = ( function(){
-    
     /**
      * Loads an array of sound (or any other) files into an "arraybuffer"
      * a typed array. See:
@@ -28,8 +26,6 @@ com.sound.SoundBufferLoader = ( function(){
       this.bufferList = new Array();
       this.loadCount = 0;
     }
-    var SoundBufferLoader = newClass(SoundBufferLoader);
-    
     SoundBufferLoader.prototype.audioContext = null;
     SoundBufferLoader.prototype.urlList = null;
     SoundBufferLoader.prototype.onload = null;
@@ -127,8 +123,3 @@ com.sound.SoundBufferLoader = ( function(){
         //
         request.send();
     }
-    
-    
-    //
-    return SoundBufferLoader;
-})();
