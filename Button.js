@@ -19,7 +19,7 @@ function Button(imageName,posX,posY,name){
 
     var buttonTextures = [];
     for(var i in PIXI.utils.TextureCache){
-        console.log(i);
+        //console.log(i);
         if(String(i).indexOf(imageName+"_") != -1){
             if(String(i).indexOf("on") != -1){
                 buttonTextures[3] = PIXI.Texture.fromFrame(i);
