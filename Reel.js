@@ -302,6 +302,7 @@ Reel.prototype.stopReel = function(){
         }
 
         this.state = Reel.BOUNCING;
+        SoundPlayer.getInstance().play(Sounds.REEL_STOP);
         //console.log("STOP " + this.symbolsInView())
     }
     

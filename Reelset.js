@@ -55,6 +55,7 @@ Reelset.prototype = Object.create(PIXI.Container.prototype);
 Reelset.prototype.contructor = Reelset;
 Reelset.prototype.reels = null;
 Reelset.prototype.symbolData = null;
+Reelset.prototype.spinSound = null;
 Reelset.symbolData = null;
 
 
@@ -92,6 +93,9 @@ Reelset.prototype.onReelStopped = function(event){
         }        
         Events.Dispatcher.dispatchEvent(new Event(Event.ALL_REELS_STOPPED));
     }
+    else if(event.data == 2){
+        SoundPlayer.getInstance().fadeOut(this.spinSound,250);
+    }
 }
 
 /**
@@ -113,6 +117,7 @@ Reelset.prototype.spinReels = function(){
            ++next 
        },GameConfig.getInstance().startTiming[t]);      
     }
+    this.spinSound = SoundPlayer.getInstance().play(Sounds.SPIN_LOOP,true);
 }
 
 /**

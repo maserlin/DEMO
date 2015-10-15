@@ -1,0 +1,721 @@
+{
+	"$schema": "http://json-schemas.geco.io/general/geco-v1.json",
+	"version": "rgs",
+	"name": "witch-of-the-west",
+	"host": "geco",
+	"interface": "dev-wallet",
+	"currency": "GBP",
+	"player": {
+		"balance": {
+			"currency": "GBP",
+			"amount": 50145.800
+		},
+		"_links": [{
+			"href": "http://tgc-dev.geco.io/game/5/client_state",
+			"type": "application/octet-stream",
+			"method": "PUT",
+			"rel": "player-client-state-save"
+		}]
+	},
+	"parameters": {
+		"dev-wallet/withdraw.url": "https://dev_wallet.geco.io/withdraw?username=:username",
+		"dev-wallet/home.url": "http://games.geco.io//mobile/html5.do?region=UK&language=en",
+		"dev-wallet/registration.url": "https://dev_wallet.geco.io/registration",
+		"dev-wallet/responsibleGamblingIconImg1.url": "http://games.geco.io/respGamingIcons/logo1.png",
+		"dev-wallet/deposit.url": "https://dev_wallet.geco.io/deposit?username=:username",
+		"dev-wallet/responsibleGamblingIconLink1.url": "http://www.gamblingcontrol.org/",
+		"defaultStake": "0.10",
+		"stakeValues": "0.10 0.20 0.50 1.00 2.00 2.50 5.00 10.00 15.00 20.00 50.00",
+		"maxWin": "1000000",
+		"dev-wallet/locale": "en-GB"
+	},
+	"definition": {
+		"viewDefs": {
+			"defaultView": [8,
+			0,
+			1,
+			2,
+			2,
+			4,
+			3,
+			4,
+			5,
+			4,
+			4,
+			6,
+			7,
+			8,
+			2],
+			"type": "grid",
+			"view": [["0",
+			"1",
+			"2",
+			"3",
+			"4"],
+			["5",
+			"6",
+			"7",
+			"8",
+			"9"],
+			["10",
+			"11",
+			"12",
+			"13",
+			"14"]]
+		},
+		"symbolDefs": {
+			"0": {
+				"isWild": false,
+				"displayName": "Nine"
+			},
+			"1": {
+				"isWild": false,
+				"displayName": "Ten"
+			},
+			"2": {
+				"isWild": false,
+				"displayName": "Jack"
+			},
+			"3": {
+				"isWild": false,
+				"displayName": "Queen"
+			},
+			"4": {
+				"isWild": false,
+				"displayName": "King"
+			},
+			"5": {
+				"isWild": false,
+				"displayName": "Ace"
+			},
+			"6": {
+				"isWild": false,
+				"displayName": "Top 1"
+			},
+			"7": {
+				"isWild": false,
+				"displayName": "Top 2"
+			},
+			"8": {
+				"isWild": false,
+				"displayName": "Top 3"
+			},
+			"9": {
+				"isWild": false,
+				"displayName": "Top 4"
+			},
+			"10": {
+				"isWild": true,
+				"displayName": "Wild"
+			},
+			"11": {
+				"isWild": false,
+				"displayName": "Scatter"
+			}
+		},
+		"winDefs": {
+			"11:3": {
+				"type": "scatter",
+				"symbol": "11",
+				"freq": 3,
+				"payoutFactor": 0,
+				"prize": "FreeSpins5"
+			},
+			"11:4": {
+				"type": "scatter",
+				"symbol": "11",
+				"freq": 4,
+				"payoutFactor": 0,
+				"prize": "FreeSpins6"
+			},
+			"11:5": {
+				"type": "scatter",
+				"symbol": "11",
+				"freq": 5,
+				"payoutFactor": 0,
+				"prize": "FreeSpins7"
+			},
+			"11:6": {
+				"type": "scatter",
+				"symbol": "11",
+				"freq": 6,
+				"payoutFactor": 0,
+				"prize": "FreeSpins8"
+			},
+			"11:7": {
+				"type": "scatter",
+				"symbol": "11",
+				"freq": 7,
+				"payoutFactor": 0,
+				"prize": "FreeSpins9"
+			},
+			"11:8": {
+				"type": "scatter",
+				"symbol": "11",
+				"freq": 8,
+				"payoutFactor": 0,
+				"prize": "FreeSpins10"
+			},
+			"11:9": {
+				"type": "scatter",
+				"symbol": "11",
+				"freq": 9,
+				"payoutFactor": 0,
+				"prize": "FreeSpins12"
+			},
+			"11:10": {
+				"type": "scatter",
+				"symbol": "11",
+				"freq": 10,
+				"payoutFactor": 0,
+				"prize": "FreeSpins15"
+			},
+			"11:11": {
+				"type": "scatter",
+				"symbol": "11",
+				"freq": 11,
+				"payoutFactor": 0,
+				"prize": "FreeSpins20"
+			},
+			"0:3": {
+				"type": "line",
+				"symbol": "0",
+				"freq": 3,
+				"payoutFactor": 4.0
+			},
+			"0:4": {
+				"type": "line",
+				"symbol": "0",
+				"freq": 4,
+				"payoutFactor": 7.0
+			},
+			"0:5": {
+				"type": "line",
+				"symbol": "0",
+				"freq": 5,
+				"payoutFactor": 10.0
+			},
+			"1:3": {
+				"type": "line",
+				"symbol": "1",
+				"freq": 3,
+				"payoutFactor": 4.0
+			},
+			"1:4": {
+				"type": "line",
+				"symbol": "1",
+				"freq": 4,
+				"payoutFactor": 7.0
+			},
+			"1:5": {
+				"type": "line",
+				"symbol": "1",
+				"freq": 5,
+				"payoutFactor": 12.0
+			},
+			"2:3": {
+				"type": "line",
+				"symbol": "2",
+				"freq": 3,
+				"payoutFactor": 7.0
+			},
+			"2:4": {
+				"type": "line",
+				"symbol": "2",
+				"freq": 4,
+				"payoutFactor": 10.0
+			},
+			"2:5": {
+				"type": "line",
+				"symbol": "2",
+				"freq": 5,
+				"payoutFactor": 15.0
+			},
+			"3:3": {
+				"type": "line",
+				"symbol": "3",
+				"freq": 3,
+				"payoutFactor": 7.0
+			},
+			"3:4": {
+				"type": "line",
+				"symbol": "3",
+				"freq": 4,
+				"payoutFactor": 10.0
+			},
+			"3:5": {
+				"type": "line",
+				"symbol": "3",
+				"freq": 5,
+				"payoutFactor": 20.0
+			},
+			"4:3": {
+				"type": "line",
+				"symbol": "4",
+				"freq": 3,
+				"payoutFactor": 10.0
+			},
+			"4:4": {
+				"type": "line",
+				"symbol": "4",
+				"freq": 4,
+				"payoutFactor": 15.0
+			},
+			"4:5": {
+				"type": "line",
+				"symbol": "4",
+				"freq": 5,
+				"payoutFactor": 25.0
+			},
+			"5:3": {
+				"type": "line",
+				"symbol": "5",
+				"freq": 3,
+				"payoutFactor": 12.0
+			},
+			"5:4": {
+				"type": "line",
+				"symbol": "5",
+				"freq": 4,
+				"payoutFactor": 20.0
+			},
+			"5:5": {
+				"type": "line",
+				"symbol": "5",
+				"freq": 5,
+				"payoutFactor": 25.0
+			},
+			"6:3": {
+				"type": "line",
+				"symbol": "6",
+				"freq": 3,
+				"payoutFactor": 50.0
+			},
+			"6:4": {
+				"type": "line",
+				"symbol": "6",
+				"freq": 4,
+				"payoutFactor": 75.0
+			},
+			"6:5": {
+				"type": "line",
+				"symbol": "6",
+				"freq": 5,
+				"payoutFactor": 250.0
+			},
+			"7:3": {
+				"type": "line",
+				"symbol": "7",
+				"freq": 3,
+				"payoutFactor": 25.0
+			},
+			"7:4": {
+				"type": "line",
+				"symbol": "7",
+				"freq": 4,
+				"payoutFactor": 35.0
+			},
+			"7:5": {
+				"type": "line",
+				"symbol": "7",
+				"freq": 5,
+				"payoutFactor": 75.0
+			},
+			"8:3": {
+				"type": "line",
+				"symbol": "8",
+				"freq": 3,
+				"payoutFactor": 20.0
+			},
+			"8:4": {
+				"type": "line",
+				"symbol": "8",
+				"freq": 4,
+				"payoutFactor": 30.0
+			},
+			"8:5": {
+				"type": "line",
+				"symbol": "8",
+				"freq": 5,
+				"payoutFactor": 50.0
+			},
+			"9:3": {
+				"type": "line",
+				"symbol": "9",
+				"freq": 3,
+				"payoutFactor": 15.0
+			},
+			"9:4": {
+				"type": "line",
+				"symbol": "9",
+				"freq": 4,
+				"payoutFactor": 25.0
+			},
+			"9:5": {
+				"type": "line",
+				"symbol": "9",
+				"freq": 5,
+				"payoutFactor": 40.0
+			}
+		},
+		"winlineDefs": {
+			"0": ["5",
+			"6",
+			"7",
+			"8",
+			"9"],
+			"1": ["0",
+			"1",
+			"2",
+			"3",
+			"4"],
+			"2": ["10",
+			"11",
+			"12",
+			"13",
+			"14"],
+			"3": ["0",
+			"6",
+			"12",
+			"8",
+			"4"],
+			"4": ["10",
+			"6",
+			"2",
+			"8",
+			"14"],
+			"5": ["0",
+			"1",
+			"7",
+			"13",
+			"14"],
+			"6": ["10",
+			"11",
+			"7",
+			"3",
+			"4"],
+			"7": ["5",
+			"1",
+			"7",
+			"13",
+			"9"],
+			"8": ["5",
+			"11",
+			"7",
+			"3",
+			"9"],
+			"9": ["0",
+			"6",
+			"7",
+			"8",
+			"14"],
+			"10": ["10",
+			"6",
+			"7",
+			"8",
+			"4"],
+			"11": ["5",
+			"1",
+			"2",
+			"8",
+			"14"],
+			"12": ["5",
+			"11",
+			"12",
+			"8",
+			"4"],
+			"13": ["5",
+			"6",
+			"2",
+			"8",
+			"14"],
+			"14": ["5",
+			"6",
+			"12",
+			"8",
+			"4"],
+			"15": ["0",
+			"6",
+			"2",
+			"8",
+			"14"],
+			"16": ["10",
+			"6",
+			"12",
+			"8",
+			"4"],
+			"17": ["10",
+			"6",
+			"2",
+			"3",
+			"9"],
+			"18": ["0",
+			"6",
+			"12",
+			"13",
+			"9"],
+			"19": ["0",
+			"6",
+			"7",
+			"13",
+			"9"],
+			"20": ["0",
+			"6",
+			"2",
+			"8",
+			"4"],
+			"21": ["10",
+			"6",
+			"12",
+			"8",
+			"14"],
+			"22": ["0",
+			"11",
+			"2",
+			"13",
+			"4"],
+			"23": ["10",
+			"1",
+			"12",
+			"3",
+			"14"],
+			"24": ["0",
+			"1",
+			"12",
+			"3",
+			"4"],
+			"25": ["10",
+			"11",
+			"2",
+			"13",
+			"14"],
+			"26": ["10",
+			"1",
+			"2",
+			"3",
+			"14"],
+			"27": ["5",
+			"6",
+			"7",
+			"3",
+			"14"],
+			"28": ["5",
+			"1",
+			"12",
+			"3",
+			"9"],
+			"29": ["5",
+			"11",
+			"2",
+			"13",
+			"9"],
+			"30": ["0",
+			"11",
+			"12",
+			"13",
+			"4"],
+			"31": ["5",
+			"6",
+			"7",
+			"13",
+			"4"],
+			"32": ["10",
+			"6",
+			"2",
+			"3",
+			"4"],
+			"33": ["0",
+			"6",
+			"12",
+			"13",
+			"14"],
+			"34": ["5",
+			"6",
+			"2",
+			"3",
+			"14"],
+			"35": ["10",
+			"11",
+			"12",
+			"8",
+			"4"],
+			"36": ["0",
+			"1",
+			"2",
+			"8",
+			"14"],
+			"37": ["5",
+			"6",
+			"12",
+			"13",
+			"4"],
+			"38": ["10",
+			"11",
+			"2",
+			"13",
+			"14"],
+			"39": ["0",
+			"1",
+			"7",
+			"3",
+			"4"],
+			"40": ["5",
+			"6",
+			"2",
+			"3",
+			"14"],
+			"41": ["10",
+			"11",
+			"12",
+			"13",
+			"4"],
+			"42": ["0",
+			"1",
+			"2",
+			"3",
+			"14"],
+			"43": ["5",
+			"6",
+			"12",
+			"13",
+			"4"],
+			"44": ["10",
+			"11",
+			"2",
+			"8",
+			"14"],
+			"45": ["0",
+			"1",
+			"12",
+			"8",
+			"4"],
+			"46": ["5",
+			"11",
+			"12",
+			"3",
+			"14"],
+			"47": ["10",
+			"6",
+			"7",
+			"3",
+			"4"],
+			"48": ["0",
+			"6",
+			"7",
+			"13",
+			"14"],
+			"49": ["5",
+			"1",
+			"2",
+			"13",
+			"4"]
+		},
+		"info": {
+			"view_size": 3,
+			"num_reels": 5,
+			"symbol_pos": [[0,
+			1,
+			2,
+			3,
+			4],
+			[5,
+			6,
+			7,
+			8,
+			9],
+			[10,
+			11,
+			12,
+			13,
+			14]],
+			"win_lines": 50
+		},
+		"prizeDefs": {
+			"FreeSpins5": {
+				"type": "freespins",
+				"scatters": 3,
+				"spins": 5
+			},
+			"FreeSpins6": {
+				"type": "freespins",
+				"scatters": 4,
+				"spins": 6
+			},
+			"FreeSpins7": {
+				"type": "freespins",
+				"scatters": 5,
+				"spins": 7
+			},
+			"FreeSpins8": {
+				"type": "freespins",
+				"scatters": 6,
+				"spins": 8
+			},
+			"FreeSpins9": {
+				"type": "freespins",
+				"scatters": 7,
+				"spins": 9
+			},
+			"FreeSpins10": {
+				"type": "freespins",
+				"scatters": 8,
+				"spins": 10
+			},
+			"FreeSpins12": {
+				"type": "freespins",
+				"scatters": 9,
+				"spins": 12
+			},
+			"FreeSpins15": {
+				"type": "freespins",
+				"scatters": 10,
+				"spins": 15
+			},
+			"FreeSpins20": {
+				"type": "freespins",
+				"scatters": 11,
+				"spins": 20
+			}
+		},
+		"big_wins": [{
+			"index": 0,
+			"type": "Big Win",
+			"Thresold": 8
+		},
+		{
+			"index": 1,
+			"type": "Super Win",
+			"Thresold": 15
+		},
+		{
+			"index": 2,
+			"type": "Mega Win",
+			"Thresold": 25
+		}]
+	},
+	"_links": [{
+		"href": "http://tgc-dev.geco.io/game/5?ccy=GBP",
+		"method": "GET",
+		"rel": "self"
+	},
+	{
+		"href": "http://tgc-dev.geco.io/gameplay/5445",
+		"method": "GET",
+		"rel": "latest-gameplay"
+	},
+	{
+		"href": "http://tgc-dev.geco.io/game/5?ccy=GBP",
+		"type": "application/vnd.geco.slots.spin-v1+json",
+		"method": "POST",
+		"rel": "new-game"
+	}],
+	"_forms": {
+		"application/vnd.geco.slots.spin-v1+json": {
+			"action": "spin",
+			"perLine": true,
+			"$schema": "http://json-schemas.geco.io/slots/spin-v1.json",
+			"stake": null,
+			"selectedWinLines": []
+		}
+	}
+}

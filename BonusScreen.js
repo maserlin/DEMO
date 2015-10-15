@@ -1,8 +1,9 @@
-function BonusScreen(results)
+function BonusScreen(results, sound)
 {
     GameScreen.call(this);
 
     this.results = results;
+    this.sound = sound;
     console.log("Bonus got results",this.results);
     
     this.alpha = 0;    
@@ -68,6 +69,10 @@ BonusScreen.prototype.showWin = function(position){
     // All shown
     var that = this;
     if(this.results.length == 0){
+
+        SoundPlayer.getInstance().fadeOut(this.sound, 350);
+        SoundPlayer.getInstance().fadeIn(Sounds.BONUS_SUMMARY, 350);
+
         setTimeout(function(){
             that.removeChildren();
             var size = getWindowBounds();
@@ -103,6 +108,9 @@ BonusScreen.prototype.onComplete = function(){
 
 BonusScreen.prototype.onClick = function(explosion){
     console.log("Bonus screen CLICK",explosion);
+
+    SoundPlayer.getInstance().play(Sounds.SHOT);
+
     explosion.loop = false;
     var that = this;
     explosion.onComplete = function(){
@@ -128,17 +136,6 @@ BonusScreen.prototype.addExplosion = function(id){
     var rand = Math.floor(Math.random() * this.screenGrid.length);
     var point = this.screenGrid.splice(rand, 1);
     console.log("explosion at ", point[0].x, point[0].y)
-
-/*
-    var x = Math.random() * size.x;
-    var y = Math.random() * size.y;
-
-    if(x<80)x+=150;
-    if(x>size.x-80)x-=150;
-
-    if(y<50)y+=120;
-    if(y>size.y-50)y-=120;
-*/
 
     explosion.position.x = point[0].x;
     explosion.position.y = point[0].y;

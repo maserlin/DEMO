@@ -60,6 +60,8 @@ SpinButton.prototype.onClick = function(data){
     else{
         this.clicked = false;
     }
+
+    SoundPlayer.getInstance().play(Sounds.CLICK);
 }
 
 /**

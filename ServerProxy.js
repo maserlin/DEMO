@@ -11,6 +11,8 @@ function ServerProxy(server, dataParser){
 
     this.receiveResponse = this.receiveResponse.bind(this);
     this.receiveErrorResponse = this.receiveErrorResponse.bind(this);
+    this.serverTimeout = this.serverTimeout.bind(this);
+    this._objComms.setHandlerTime(this.serverTimeout, 3000);
 
     trace("Created ServerProxy");
 }
@@ -21,7 +23,7 @@ ServerProxy.prototype._objComms = null;
 ServerProxy.prototype._timeOfLastBet = 0;
 ServerProxy.BET_INTERVAL = 3000;
     
-    
+
 /**
  *
  * @param {Object} data: JSON from game
@@ -137,16 +139,25 @@ ServerProxy.prototype.receiveResponse = function(responseData)
  *
  * @param responseData
  */
-ServerProxy.prototype.receiveErrorResponse = function(responseData)
-{
-    console.log("Received error response",responseData);
+ServerProxy.prototype.receiveErrorResponse = function(responseData){
+    console.log( "Received error response with responseData \"" + responseData + "\"" );
+    console.log( "TAKING NO ACTION");
+}
+
+/**
+ * Server timeout: no response received.
+ * Stop reels safely & show error dialog.
+ * This demo: fabricate a valid result for testing.
+ */
+ServerProxy.prototype.serverTimeout = function(){
+    console.log( "ServerProxy.prototype.serverTimeout");
         // Can be helpful to split responses up:
         switch(this._requestCode){
             case Event.INIT:
-                Events.Dispatcher.dispatchEvent(new Event(Event.INVALID_INIT_RESPONSE_RECEIVED, responseData));
+                Events.Dispatcher.dispatchEvent(new Event(Event.INVALID_INIT_RESPONSE_RECEIVED));
                 break;
             case Event.BET:
-                Events.Dispatcher.dispatchEvent(new Event(Event.INVALID_RESPONSE_RECEIVED, responseData));
+                Events.Dispatcher.dispatchEvent(new Event(Event.INVALID_RESPONSE_RECEIVED));
                 break;
         }
 }

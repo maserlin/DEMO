@@ -37,6 +37,7 @@ WinCalculator.prototype.calculate = function(reelMap){
     console.log("WinCalculator calc " + reelMap);
 
     this.wins = Object.create(null);
+    this.wins.winIds = [];
     this.wins.winline = [];
     this.wins.lines = [];
     this.wins.winAmount = [];
@@ -92,31 +93,33 @@ WinCalculator.prototype.calculate = function(reelMap){
 WinCalculator.prototype.analyseSymbols = function(line, symbols){
     var count = 1;
     
-    var wilds = [];
+    var nonwilds = [];
     
     // Track which symbols are NOT wild!
     for(var s in symbols){
-        if(symbols[s] != WinCalculator.WILD)wilds.push(s);
+        if(symbols[s] != WinCalculator.WILD)nonwilds.push(s);
     }
     
     // Wilds win: winAmount is wilds value
-    if(wilds.length == 0){
+    if(nonwilds.length == 0){
+        this.wins.winIds.push(WinCalculator.WILD);
         this.wins.winline.push(symbols);
         this.wins.lines.push(line);
         this.wins.winAmount.push(WinCalculator.WILD * 100);
     }
     
     // Symbol win with 4 wilds: winAmount is symbol value
-    else if(wilds.length == 1){
+    else if(nonwilds.length == 1){
+        this.wins.winIds.push(nonwilds[0]);
         this.wins.winline.push(symbols);
         this.wins.lines.push(line);
-        this.wins.winAmount.push((1+symbols[wilds[0]]) * 50);
+        this.wins.winAmount.push((1+symbols[nonwilds[0]]) * 50);
     }
     
     // 
     else{
         // First symbol that's not a wild
-        var matchSymbol;
+        var matchSymbol = null;
         for(var s in symbols){
             if(symbols[s] != WinCalculator.WILD)
             {
@@ -124,7 +127,7 @@ WinCalculator.prototype.analyseSymbols = function(line, symbols){
                 break;
             }
         }
-        
+
         // Check all symbols against match symbol
         for(var s=1; s<symbols.length; ++s)
         {
@@ -135,6 +138,7 @@ WinCalculator.prototype.analyseSymbols = function(line, symbols){
         // 3 or more symbols match
         if(count > 2)
         {
+            this.wins.winIds.push(matchSymbol);
             this.wins.winline.push(symbols.slice(0,count));
             this.wins.lines.push(line);
             this.wins.winAmount.push((1+matchSymbol) * count * 10);

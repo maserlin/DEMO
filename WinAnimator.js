@@ -26,12 +26,17 @@ function WinAnimator(reelset, winlinesView, winSplash){
 
     this.onSpin = this.onSpin.bind(this);
     Events.Dispatcher.addEventListener(Event.SPIN, this.onSpin);
+
+    // Very simple sounds ;)
+    this.winSounds = [Sounds.LOW_WIN,Sounds.LOW_WIN,Sounds.LOW_WIN,Sounds.LOW_WIN,Sounds.LOW_WIN,
+                      Sounds.HIGH_WIN,Sounds.HIGH_WIN,Sounds.HIGH_WIN,Sounds.HIGH_WIN,Sounds.HIGH_WIN];
 }
 WinAnimator.prototype.winData = null;
 WinAnimator.prototype.reelset = null;
 WinAnimator.prototype.winlinesView = null;
 WinAnimator.prototype.winSplash = null;
 WinAnimator.prototype.timeout = null;
+WinAnimator.prototype.winSounds = null;
 
 
 
@@ -49,7 +54,9 @@ WinAnimator.prototype.onSpin = function(){
  */
 WinAnimator.prototype.start = function(winData){
     this.winData = winData;
-    
+
+    SoundPlayer.getInstance().play(Sounds.WIN_SUMMARY);
+
     this.winlinesView.showLineSummary(this.winData);
     
     var that = this;
@@ -77,6 +84,9 @@ WinAnimator.prototype.onWinSummaryComplete = function(event){
  */
 WinAnimator.prototype.showNext = function(){
     if(this.winShown < this.winData.lines.length){
+
+        SoundPlayer.getInstance().play(this.winSounds[this.winData.winIds[this.winShown]]);
+
         var lineId = this.winData.lines[this.winShown];
         this.numOfSymbols = this.winData.winline[this.winShown].length;        
         console.log("Show",this.numOfSymbols,"symbols on line",lineId);

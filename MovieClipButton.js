@@ -87,6 +87,7 @@ MovieClipButton.prototype.buttonClick = function(){
     else{
         this.clicked = false;
     }
+    SoundPlayer.getInstance().play(Sounds.CLICK);
 }
 
 

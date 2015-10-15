@@ -36,6 +36,7 @@ WinSplash.prototype.text = null;
 WinSplash.prototype.timeout = null;
 WinSplash.prototype.animateIn = true;
 WinSplash.prototype.winShown = 0;
+WinSplash.prototype.sound = null;
 
 /*
  * SPIN pressed: clear immediately and don't come back :) 
@@ -46,6 +47,7 @@ WinSplash.prototype.onSpin = function(){
     globalTicker.remove(this.animate);
     this.removeChild(this.text);
     this.visible = false;
+    SoundPlayer.getInstance().stop(this.sound);
 };
 
 /*
@@ -62,6 +64,9 @@ WinSplash.prototype.show = function(winObj){
  * Animate in 
  */
 WinSplash.prototype.showTotal = function(winObj){
+
+    this.sound = SoundPlayer.getInstance().play(Sounds.WIN_LOOP, true);
+
     this.winObj = winObj;
     totWin = 0;
     for(var win in this.winObj.winAmount)totWin += this.winObj.winAmount[win];
@@ -134,6 +139,7 @@ WinSplash.prototype.showNextWin = function(){
 WinSplash.prototype.hide = function(){
     this.animateIn = false;
     globalTicker.add(this.animate);
+    SoundPlayer.getInstance().fadeOut(this.sound, 350);
 };
 
 /**

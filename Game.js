@@ -58,7 +58,7 @@ Game.prototype.currentScreen = null;
 Game.prototype.validResponseReceived = false;
 Game.prototype.invalidResponseReceived = false;
 Game.prototype.reelsSpinning = false;
-
+Game.prototype.bonusBgSound = null;
 
 /**
  * Build everything.
@@ -138,6 +138,9 @@ Game.prototype.loadScreen = function(screen){
  */
 Game.prototype.onStartBonus = function(){
     console.log("Start Bonus");
+
+    this.bonusBgSound = SoundPlayer.getInstance().play(Sounds.BG_LOOP,true);
+
     this.console.hide();
     this.gameBackground.change(GameBackground.REELS_BG,GameBackground.BONUS_BG);
     this.fadeScreen = this.reelsScreen;
@@ -164,7 +167,7 @@ Game.prototype.onBonusComplete = function(){
 Game.prototype.onReelsOut = function(){
     console.log("onReelsOut for Bonus");
     this.layers[Game.MAIN].removeChild(this.reelsScreen);    
-    this.bonusScreen = new BonusScreen(this.dataParser.getBonusWins());
+    this.bonusScreen = new BonusScreen(this.dataParser.getBonusWins(),this.bonusBgSound);
     this.loadScreen(this.bonusScreen);    
 
     this.fadeScreen = this.bonusScreen;

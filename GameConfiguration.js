@@ -29,10 +29,9 @@ GameConfig.getInstance = function(){
  * Set things from profile xml 
  */
 GameConfig.prototype.setConfig = function(xmlString){
-    
     // use call because passing args as comma list
     Configuration.prototype.setConfig.call(this, xmlString);
-    
+
     this.setBonusChance(this.profileXmlDoc.getElementsByTagName("Bonus"));
 }
 

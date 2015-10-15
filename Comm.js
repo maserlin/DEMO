@@ -23,7 +23,7 @@ function Comm(vhostIn) {
     this.mimeType = null;
     this.headers = [];
 	this.errors = [];
-	this.msTimeout = 60000;
+	this.msTimeout = 3000;
 	this.vhost = vhostIn;
 	
 	this.startTime = null;

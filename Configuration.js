@@ -36,12 +36,13 @@ Configuration.prototype.getNumberOfWinlines = function(){
 /**
  * Set whatever we need to from profile xml 
  */
-Configuration.prototype.setConfig = function(xmlString){
-    this.profileXmlDoc = createDoc(xmlString);
-    
-    this.setReels(this.profileXmlDoc.getElementsByTagName("Reels"));
-    this.setWinlines(this.profileXmlDoc.getElementsByTagName("Winline"));
-    this.setStakes(this.profileXmlDoc.getElementsByTagName("Stakes"))
+Configuration.prototype.setConfig = function(xmlString)
+{
+    this.profileXmlDoc = createDoc( xmlString );
+
+    this.setReels( this.profileXmlDoc.getElementsByTagName( "Reels" ) );
+    this.setWinlines( this.profileXmlDoc.getElementsByTagName( "Winline" ) );
+    this.setStakes( this.profileXmlDoc.getElementsByTagName( "Stakes" ) )
 }
 
 /**
