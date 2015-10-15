@@ -21,7 +21,6 @@ function GameLoader(){
     // Bind functions to ensure correct value of "this" in method.
     this.loadProfile = this.loadProfile.bind(this);   
     this.loadAssets = this.loadAssets.bind(this);   
-    this.loadSounds = this.loadSounds.bind(this);
     this.onreadystatechange = this.onreadystatechange.bind(this);
 }
 GameLoader.prototype = Object.create(PIXI.loaders.Loader.prototype);
@@ -79,7 +78,6 @@ GameLoader.prototype.loadAssets = function(){
     // Load standalone images. NOT doing so results in some VERY strange behaviour!
     assets.push("images/bg.jpg");
     assets.push("images/bg2.jpg");
-    assets.push("sounds/soundsLibrary.json");
     // Go
     this.add(assets);
     this.once('complete',this.onAssetsLoaded);
@@ -87,17 +85,6 @@ GameLoader.prototype.loadAssets = function(){
     this.load();
 }
 
-/**
- *
- */
-GameLoader.prototype.loadSounds = function(){
-    return;
-    var soundfile = "sounds/soundsLibrary.json";
-    this.add(soundfile);
-    this.once('complete',this.onSoundJsonLoaded);
-    this.on('progress', this.onProgress);
-    this.load();
-}
 
 
 /**
@@ -126,6 +113,7 @@ function getXMLHttpRequest()
 GameLoader.prototype.onProgress = function(data){
     console.log(data.progress);
 }
+var soundJson = null;
 
 /**
  * Dispatch event on loading assets complete
@@ -133,7 +121,11 @@ GameLoader.prototype.onProgress = function(data){
  */
 GameLoader.prototype.onAssetsLoaded = function(data){
     for ( var obj in data.resources){
+/*
         console.log("Loaded " + obj);
+        console.log(data.resources[obj]);
+        if(data.resources[obj].data)console.log(data.resources[obj].data);
+*/
     }
     Events.Dispatcher.dispatchEvent(new Event(Event.ASSETS_LOADED));
 }

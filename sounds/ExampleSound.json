@@ -1,0 +1,354 @@
+{
+	"sounds": [{
+		"name": "T-Q_win",
+		"filename": "T-Q_win.mp3",
+		"start": 2,
+		"end": 2.529,
+		"duration": 0.529,
+		"loop": false
+	},
+	{
+		"name": "amazing_multiplier",
+		"filename": "amazing_multiplier.mp3",
+		"start": 3.129,
+		"end": 6.692,
+		"duration": 3.563,
+		"loop": false
+	},
+	{
+		"name": "amazingly_big_win_loop",
+		"filename": "amazingly_big_win_loop.mp3",
+		"start": 7.292,
+		"end": 19.085,
+		"duration": 12.557,
+		"loop": true
+	},
+	{
+		"name": "backtoreelstransition",
+		"filename": "backtoreelstransition.mp3",
+		"start": 20.45,
+		"end": 30.196,
+		"duration": 9.746,
+		"loop": false
+	},
+	{
+		"name": "bonus_instructions_appear",
+		"filename": "bonus_instructions_appear.mp3",
+		"start": 30.796,
+		"end": 31.822,
+		"duration": 1.25,
+		"loop": false
+	},
+	{
+		"name": "bonus_total_summary",
+		"filename": "bonus_total_summary.mp3",
+		"start": 32.422,
+		"end": 36.825,
+		"duration": 4.403,
+		"loop": false
+	},
+	{
+		"name": "buttonpress",
+		"filename": "buttonpress.mp3",
+		"start": 37.425,
+		"end": 37.708,
+		"duration": 0.282,
+		"loop": false
+	},
+	{
+		"name": "Count_up_tick_loop_2",
+		"filename": "Count_up_tick_loop_2.mp3",
+		"start": 38.308,
+		"end": 43.701,
+		"duration": 5.393,
+		"loop": true
+	},
+	{
+		"name": "destruction_of_freespins_surround_with_music",
+		"filename": "destruction_of_freespins_surround_with_music.mp3",
+		"start": 44.301,
+		"end": 49.751,
+		"duration": 5.45,
+		"loop": false
+	},
+	{
+		"name": "doctorsymbol",
+		"filename": "doctorsymbol.mp3",
+		"start": 50.351,
+		"end": 54.079,
+		"duration": 3.727,
+		"loop": false
+	},
+	{
+		"name": "dragonsym",
+		"filename": "dragonsym.mp3",
+		"start": 54.679,
+		"end": 57.179,
+		"duration": 2.5,
+		"loop": false
+	},
+	{
+		"name": "freespinaddfx",
+		"filename": "freespinaddfx.mp3",
+		"start": 57.779,
+		"end": 59.937,
+		"duration": 2.158,
+		"loop": false
+	},
+	{
+		"name": "freespinssloop",
+		"filename": "freespinssloop.mp3",
+		"start": 60.537,
+		"end": 95.026,
+		"duration": 34.722,
+		"loop": true
+	},
+	{
+		"name": "freespinstotalsummary",
+		"filename": "freespinstotalsummary.mp3",
+		"start": 95.86,
+		"end": 99.843,
+		"duration": 3.983,
+		"loop": false
+	},
+	{
+		"name": "freespinsymbol",
+		"filename": "freespinsymbol.mp3",
+		"start": 100.443,
+		"end": 103.521,
+		"duration": 3.77,
+		"loop": false
+	},
+	{
+		"name": "freespinsymbol2",
+		"filename": "freespinsymbol2.mp3",
+		"start": 104.121,
+		"end": 106.741,
+		"duration": 2.62,
+		"loop": false
+	},
+	{
+		"name": "freespinsymbol3",
+		"filename": "freespinsymbol3.mp3",
+		"start": 107.341,
+		"end": 109.573,
+		"duration": 2.231,
+		"loop": false
+	},
+	{
+		"name": "freespinsymbol4",
+		"filename": "freespinsymbol4.mp3",
+		"start": 110.173,
+		"end": 112.351,
+		"duration": 2.177,
+		"loop": false
+	},
+	{
+		"name": "freespinsymbol5",
+		"filename": "freespinsymbol5.mp3",
+		"start": 112.951,
+		"end": 115.063,
+		"duration": 2.111,
+		"loop": false
+	},
+	{
+		"name": "fullmoonsymbol2",
+		"filename": "fullmoonsymbol2.mp3",
+		"start": 115.663,
+		"end": 119.402,
+		"duration": 3.738,
+		"loop": false
+	},
+	{
+		"name": "gravestonecrumblefx",
+		"filename": "gravestonecrumblefx.mp3",
+		"start": 120.2,
+		"end": 122.425,
+		"duration": 2.422,
+		"loop": false
+	},
+	{
+		"name": "hidden_amounts_reveal",
+		"filename": "hidden_amounts_reveal.mp3",
+		"start": 123.25,
+		"end": 124.715,
+		"duration": 1.69,
+		"loop": false
+	},
+	{
+		"name": "incredible_multiplier",
+		"filename": "incredible_multiplier.mp3",
+		"start": 125.315,
+		"end": 129.038,
+		"duration": 3.722,
+		"loop": false
+	},
+	{
+		"name": "k_a_win",
+		"filename": "k_a_win.mp3",
+		"start": 129.638,
+		"end": 130.292,
+		"duration": 0.653,
+		"loop": false
+	},
+	{
+		"name": "lightning",
+		"filename": "lightning.mp3",
+		"start": 130.892,
+		"end": 132.992,
+		"duration": 2.1,
+		"loop": false
+	},
+	{
+		"name": "massive_multiplier",
+		"filename": "massive_multiplier.mp3",
+		"start": 133.592,
+		"end": 137.829,
+		"duration": 4.237,
+		"loop": false
+	},
+	{
+		"name": "multiplieraddfx",
+		"filename": "multiplieraddfx.mp3",
+		"start": 138.429,
+		"end": 139.657,
+		"duration": 1.228,
+		"loop": false
+	},
+	{
+		"name": "reelstops",
+		"filename": "reelstops.mp3",
+		"start": 140.257,
+		"end": 141.903,
+		"duration": 1.645,
+		"loop": false
+	},
+	{
+		"name": "reelwinsummaryhighlight",
+		"filename": "reelwinsummaryhighlight.mp3",
+		"start": 142.503,
+		"end": 144.094,
+		"duration": 1.59,
+		"loop": false
+	},
+	{
+		"name": "silverbulletsymbol",
+		"filename": "silverbulletsymbol.mp3",
+		"start": 144.694,
+		"end": 146.394,
+		"duration": 1.7,
+		"loop": false
+	},
+	{
+		"name": "stakedown",
+		"filename": "stakedown.mp3",
+		"start": 146.994,
+		"end": 147.483,
+		"duration": 0.489,
+		"loop": false
+	},
+	{
+		"name": "stakeup",
+		"filename": "stakeup.mp3",
+		"start": 148.83,
+		"end": 148.572,
+		"duration": 0.489,
+		"loop": false
+	},
+	{
+		"name": "startreelspin",
+		"filename": "startreelspin.mp3",
+		"start": 149.172,
+		"end": 150.548,
+		"duration": 1.375,
+		"loop": false
+	},
+	{
+		"name": "super_multiplier",
+		"filename": "super_multiplier.mp3",
+		"start": 151.148,
+		"end": 155.101,
+		"duration": 3.953,
+		"loop": false
+	},
+	{
+		"name": "transformation_howl_1",
+		"filename": "transformation_howl_1.mp3",
+		"start": 155.701,
+		"end": 157.962,
+		"duration": 2.26,
+		"loop": false
+	},
+	{
+		"name": "transformation_howl_2",
+		"filename": "transformation_howl_2.mp3",
+		"start": 158.562,
+		"end": 161.566,
+		"duration": 3.4,
+		"loop": false
+	},
+	{
+		"name": "transformation_howl_3",
+		"filename": "transformation_howl_3.mp3",
+		"start": 162.166,
+		"end": 165.017,
+		"duration": 3.4,
+		"loop": false
+	},
+	{
+		"name": "transformation_howl_4",
+		"filename": "transformation_howl_4.mp3",
+		"start": 165.77,
+		"end": 168.646,
+		"duration": 2.876,
+		"loop": false
+	},
+	{
+		"name": "transformation_howl_5",
+		"filename": "transformation_howl_5.mp3",
+		"start": 169.246,
+		"end": 172.138,
+		"duration": 2.891,
+		"loop": false
+	},
+	{
+		"name": "werewolffootprintsymbol",
+		"filename": "werewolffootprintsymbol.mp3",
+		"start": 172.738,
+		"end": 175.187,
+		"duration": 2.448,
+		"loop": false
+	},
+	{
+		"name": "wild_symbol_win",
+		"filename": "wild_symbol_win.mp3",
+		"start": 175.787,
+		"end": 179.727,
+		"duration": 3.94,
+		"loop": false
+	},
+	{
+		"name": "winSummary_large",
+		"filename": "winSummary_large.mp3",
+		"start": 180.327,
+		"end": 189.228,
+		"duration": 8.9,
+		"loop": false
+	},
+	{
+		"name": "wolf_howl_loopable_2",
+		"filename": "wolf_howl_loopable_2.mp3",
+		"start": 189.828,
+		"end": 192.025,
+		"duration": 2.421,
+		"loop": false
+	},
+	{
+		"name": "reelspinloop",
+		"filename": "reelspinloop.mp3",
+		"start": 192.818,
+		"end": 197.009,
+		"duration": 4.86,
+		"loop": true
+	}]
+}
